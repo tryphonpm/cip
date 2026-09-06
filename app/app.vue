@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const route = useRoute()
+
 useHead({
   htmlAttrs: { lang: 'fr' },
   title: 'CIP+ · Statistiques et alertes'
@@ -8,7 +10,7 @@ useHead({
 <template>
   <UApp>
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage :page-key="route.fullPath" />
     </NuxtLayout>
   </UApp>
 </template>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { data, refresh } = await useFetch('/api/imports')
+definePageMeta({ layout: 'default' })
+
+const { data, refresh } = useFetch('/api/imports', { lazy: true })
 const file = ref<File | null>(null)
 const pending = ref(false)
 const result = ref<Record<string, unknown> | null>(null)

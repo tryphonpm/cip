@@ -1,22 +1,24 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'default' })
+
 const route = useRoute()
-const { data, refresh } = await useFetch(`/api/beneficiaires/${route.params.id}`)
-const { data: settings } = await useFetch('/api/settings')
+const { data, refresh } = useFetch(`/api/beneficiaires/${route.params.id}`, { lazy: true })
+const { data: settings } = useFetch('/api/settings', { lazy: true })
 const projet = ref('')
 
 watch(() => data.value?.beneficiaire?.projetProfessionnel, (v) => {
-  projet.value = v || ''
+  projet.value = v || ALL_FILTER
 }, { immediate: true })
 
 const projetItems = computed(() => [
-  { label: 'Non renseigné', value: '' },
+  { label: 'Non renseigné', value: ALL_FILTER },
   ...(settings.value?.settings?.projetsProfessionnels || []).map((p: string) => ({ label: p, value: p }))
 ])
 
 async function saveProjet() {
   await $fetch(`/api/beneficiaires/${route.params.id}`, {
     method: 'PATCH',
-    body: { projetProfessionnel: projet.value }
+    body: { projetProfessionnel: toFilterQuery(projet.value) || '' }
   })
   await refresh()
 }

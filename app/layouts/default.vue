@@ -2,6 +2,24 @@
 const { user, logout } = useAuth()
 const route = useRoute()
 
+onMounted(() => {
+  // #region agent log
+  fetch('http://127.0.0.1:7533/ingest/71991fc5-0344-424f-94ec-bddb6bd94748', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a4834' },
+    body: JSON.stringify({
+      sessionId: '1a4834',
+      runId: 'pre-fix',
+      hypothesisId: 'H3',
+      location: 'layouts/default.vue',
+      message: 'default layout mounted',
+      data: { path: route.path, hasUser: Boolean(user.value) },
+      timestamp: Date.now()
+    })
+  }).catch(() => {})
+  // #endregion
+})
+
 const links = [
   { label: 'Tableau de bord', to: '/', icon: 'i-lucide-layout-dashboard' },
   { label: 'Statistiques', to: '/statistiques', icon: 'i-lucide-chart-column' },

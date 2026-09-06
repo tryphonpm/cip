@@ -1,6 +1,8 @@
 <script setup lang="ts">
-const { data: stats, refresh: refreshStats } = await useFetch('/api/stats')
-const { data: alerts, refresh: refreshAlerts } = await useFetch('/api/alerts', { query: { status: 'open' } })
+definePageMeta({ layout: 'default' })
+
+const { data: stats, refresh: refreshStats } = useFetch('/api/stats', { lazy: true })
+const { data: alerts, refresh: refreshAlerts } = useFetch('/api/alerts', { query: { status: 'open' }, lazy: true })
 
 onMounted(() => {
   refreshStats()

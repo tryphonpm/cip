@@ -1,29 +1,31 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'default' })
+
 const status = ref('open')
-const type = ref('')
-const cip = ref('')
+const type = ref(ALL_FILTER)
+const cip = ref(ALL_FILTER)
 
 const query = computed(() => ({
-  status: status.value || undefined,
-  type: type.value || undefined,
-  cip: cip.value || undefined
+  status: toFilterQuery(status.value),
+  type: toFilterQuery(type.value),
+  cip: toFilterQuery(cip.value)
 }))
 
-const { data, refresh } = await useFetch('/api/alerts', { query })
-const { data: filters } = await useFetch('/api/filters')
+const { data, refresh } = useFetch('/api/alerts', { query, lazy: true })
+const { data: filters } = useFetch('/api/filters', { lazy: true })
 watch(query, () => refresh())
 
 const typeItems = [
-  { label: 'Tous les types', value: '' },
+  { label: 'Tous les types', value: ALL_FILTER },
   ...Object.entries(ALERT_LABELS).map(([value, label]) => ({ value, label }))
 ]
 const statusItems = [
   { label: 'Ouvertes', value: 'open' },
   { label: 'Résolues', value: 'resolved' },
-  { label: 'Toutes', value: '' }
+  { label: 'Toutes', value: ALL_FILTER }
 ]
 const cipItems = computed(() => [
-  { label: 'Tous les CIP', value: '' },
+  { label: 'Tous les CIP', value: ALL_FILTER },
   ...(filters.value?.cips || []).map((v: string) => ({ label: v, value: v }))
 ])
 

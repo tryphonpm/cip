@@ -1,19 +1,21 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'default' })
+
 const q = ref('')
-const cip = ref('')
-const clpe = ref('')
-const cds = ref('')
-const statut = ref('')
+const cip = ref(ALL_FILTER)
+const clpe = ref(ALL_FILTER)
+const cds = ref(ALL_FILTER)
+const statut = ref(ALL_FILTER)
 
 const query = computed(() => ({
   q: q.value || undefined,
-  cip: cip.value || undefined,
-  clpe: clpe.value || undefined,
-  cds: cds.value || undefined,
-  statut: statut.value || undefined
+  cip: toFilterQuery(cip.value),
+  clpe: toFilterQuery(clpe.value),
+  cds: toFilterQuery(cds.value),
+  statut: toFilterQuery(statut.value)
 }))
 
-const { data, refresh } = await useFetch('/api/beneficiaires', { query })
+const { data, refresh } = useFetch('/api/beneficiaires', { query, lazy: true })
 watch(query, () => refresh())
 
 const rows = computed(() => (data.value?.beneficiaires || []).map(b => ({

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'default' })
+
 const { user } = useAuth()
-const { data, refresh } = await useFetch('/api/settings')
-const { data: users, refresh: refreshUsers } = await useFetch('/api/users', {
-  immediate: user.value?.role === 'admin'
+const { data, refresh } = useFetch('/api/settings', { lazy: true })
+const { data: users, refresh: refreshUsers } = useFetch('/api/users', {
+  immediate: user.value?.role === 'admin',
+  lazy: true
 })
 
 const delai = ref(15)
