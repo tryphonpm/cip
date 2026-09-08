@@ -1,0 +1,466 @@
+{
+  "meta": {
+    "titre": "Mapping clé à clé — document beneficiaires ↔ item orientationimports.data[]",
+    "date": "2026-09-08",
+    "objet": "Spécification de transfert futur entre la fiche bénéficiaire (reporting CIP) et une ligne d’orientation CD Ain.",
+    "collections": {
+      "beneficiaire": {
+        "nomMongo": "beneficiaires",
+        "modele": "Beneficiaire",
+        "portee": "un document = une personne suivie dans une structure CIP"
+      },
+      "orientationimports": {
+        "nomMongo": "orientationimports",
+        "modele": "OrientationImport",
+        "porteeItem": "data[] — un objet = une personne de la liste quotidienne CD Ain (canevas délégataire)"
+      }
+    },
+    "rapprochementRecommande": {
+      "clesBeneficiaire": ["nomNormalise", "prenomNormalise"],
+      "clesOrientation": ["Nom", "Prénom"],
+      "repliOrientation": ["Nom de famille", "Prénom"],
+      "Descriptif": "Le bénéficiaire est aujourd’hui identifié par structureId + nomNormalise + prenomNormalise. Côté orientation, le rapprochement se fait sur Nom + Prénom (après la même normalisation d’accents et de casse). Si Nom (nom d’usage) et Nom de famille divergent, tenter d’abord Nom, puis Nom de famille. Le NIR permettrait un identifiant stable mais n’existe pas sur le bénéficiaire et ne doit pas y être recopié sans cadre juridique."
+    },
+    "conventionsFormat": {
+      "string": "Chaîne Unicode NFC. Chaîne vide ou null = non renseigné.",
+      "integer": "Nombre entier JSON / BSON Int32 ou Int64. null = non renseigné.",
+      "date": "MongoDB : BSON Date (UTC minuit). API : ISO 8601 calendaire YYYY-MM-DD. null = non renseigné.",
+      "mail": "Chaîne minuscule, format local@domaine.",
+      "boolean": "true | false. Certaines absences métier utilisent aussi null.",
+      "objectId": "BSON ObjectId. API : chaîne hexadécimale 24 caractères.",
+      "enum": "Valeur appartenant à une liste fermée indiquée dans format*.",
+      "object": "Sous-document. Les clés filles font l’objet d’entrées dédiées.",
+      "array": "Tableau. Le type des éléments est précisé dans format*."
+    },
+    "sources": [
+      "server/models/Beneficiaire.ts",
+      "server/models/OrientationImport.ts",
+      "server/utils/parseCipWorkbook.ts",
+      "server/utils/parseOrientationWorkbook.ts",
+      "CDC/liste des orientations délégataire Val Horizon_2026-07-29.xlsx (feuille orientations)",
+      "CDC/1 REPORTING CELINE..xlsx (onglets suivi)"
+    ]
+  },
+  "mapping": [
+    {
+      "cleBeneficiaire": "civilite",
+      "cleOrientation": "Civilité",
+      "formatBeneficiaire": "string (ex. « Madame », « Monsieur » ; parfois héritée de la colonne H/F du reporting CIP)",
+      "formatOrientation": "string (ex. « Madame », « Monsieur »)",
+      "Descriptif": "Même notion d’état civil. Les libellés CD Ain sont déjà développés. Côté reporting CIP, la colonne source s’intitule souvent H/F : une normalisation (H → Monsieur, F → Madame, ou l’inverse) peut être nécessaire avant fusion."
+    },
+    {
+      "cleBeneficiaire": "nom",
+      "cleOrientation": "Nom",
+      "formatBeneficiaire": "string, obligatoire",
+      "formatOrientation": "string",
+      "Descriptif": "Nom d’usage affiché. C’est la clé nominative principale pour le rapprochement avec le reporting CIP (colonne NOM). Ne pas la confondre avec « Nom de famille », qui peut différer (nom patronymique vs nom d’usage)."
+    },
+    {
+      "cleBeneficiaire": "nom",
+      "cleOrientation": "Nom de famille",
+      "formatBeneficiaire": "string, obligatoire",
+      "formatOrientation": "string",
+      "Descriptif": "Correspondance secondaire uniquement. Lorsque Nom et Nom de famille sont identiques, l’information est redondante. Lorsqu’ils divergent, le bénéficiaire ne porte qu’un seul nom : conserver Nom comme valeur principale et n’utiliser Nom de famille qu’en repli de rapprochement, pas en écrasement silencieux."
+    },
+    {
+      "cleBeneficiaire": "prenom",
+      "cleOrientation": "Prénom",
+      "formatBeneficiaire": "string, obligatoire",
+      "formatOrientation": "string",
+      "Descriptif": "Prénom usuel. Associé à nom / Nom pour l’identité. Appliquer la même normalisation (accents, casse, espaces) que nomNormalise / prenomNormalise avant comparaison."
+    },
+    {
+      "cleBeneficiaire": "nomNormalise",
+      "cleOrientation": "Nom",
+      "formatBeneficiaire": "string, obligatoire (dérivé : majuscules, sans accents, espaces compactés)",
+      "formatOrientation": "string (valeur brute ; la normalisation se calcule à la volée)",
+      "Descriptif": "Le bénéficiaire stocke une forme normalisée pour l’unicité (index structureId + nomNormalise + prenomNormalise). L’item d’orientation ne la persiste pas : il faut la recalculer depuis Nom (puis Nom de famille en repli) avec la même fonction normalizeName."
+    },
+    {
+      "cleBeneficiaire": "prenomNormalise",
+      "cleOrientation": "Prénom",
+      "formatBeneficiaire": "string, obligatoire (dérivé : majuscules, sans accents, espaces compactés)",
+      "formatOrientation": "string (valeur brute ; la normalisation se calcule à la volée)",
+      "Descriptif": "Pendante de nomNormalise. Recalculer depuis Prénom au moment du transfert ; ne pas attendre une clé homonyme dans data[]."
+    },
+    {
+      "cleBeneficiaire": "age",
+      "cleOrientation": "Age",
+      "formatBeneficiaire": "integer | null",
+      "formatOrientation": "integer | null",
+      "Descriptif": "Âge en années révolues au moment de la source. Ce n’est pas un identifiant : les deux fichiers sont des instantanés distincts (date du reporting CIP vs date du fichier CD Ain). En cas d’écart, préférer un recalcul à partir de Date naissance (orientation) plutôt que d’écraser l’âge CIP sans règle métier."
+    },
+    {
+      "cleBeneficiaire": "cds",
+      "cleOrientation": "CDS",
+      "formatBeneficiaire": "string (libellé normalisé, ex. « Oyonnax », « St Didier sur Chalaronne »)",
+      "formatOrientation": "string (libellé CD Ain, ex. « Saint Didier sur Chalaronne »)",
+      "Descriptif": "Même référentiel territorial (centre de service). Les graphies diffèrent (Saint / St, accents, casse). Le transfert doit passer par la normalisation déjà utilisée à l’attribution (matchCdsOption / cdsLabelsMatch) vers le tableau settings.cds, et non par une égalité stricte de chaînes."
+    },
+    {
+      "cleBeneficiaire": "cipNom",
+      "cleOrientation": "CIP",
+      "formatBeneficiaire": "string (nom du CIP issu de l’en-tête du reporting, ex. « CELINE SARIGOL »)",
+      "formatOrientation": "string (NOM_AFFICHAGE du salarié CIP, ex. « LEPINE Annick ») ; souvent vide à l’import, renseigné à l’attribution",
+      "Descriptif": "Même rôle métier (conseiller qui accompagne), origines différentes. cipNom vient du fichier reporting (une CIP par structure). CIP est saisi dans l’application à partir de salariescip.identite.NOM_AFFICHAGE, après choix du CDS. Un transfert orientation → bénéficiaire n’est pertinent qu’une fois CIP attribué, et après contrôle que le libellé correspond bien à un salarié du référentiel."
+    },
+    {
+      "cleBeneficiaire": "clpe",
+      "cleOrientation": "CLPE",
+      "formatBeneficiaire": "string (extrait de l’en-tête reporting, ex. « ZONE 4 »)",
+      "formatOrientation": "string (CLPE par personne côté CD Ain, ex. « 2-Sud Ouest »)",
+      "Descriptif": "Même concept (territoire CLPE) mais codifications distinctes. Les valeurs ne sont pas interchangeables telles quelles. Un transfert fiable exige une table de correspondance ZONE CIP ↔ code CD Ain ; sans ce référentiel, limiter le rapprochement à un contrôle d’appartenance territoriale, pas à une copie directe."
+    },
+    {
+      "cleBeneficiaire": "dateOrientation",
+      "cleOrientation": "Date début orientation RSA",
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": "date | null",
+      "Descriptif": "Correspondance principale. Date début orientation RSA est la date officielle de démarrage du parcours côté CD Ain. Elle alimente le même besoin que DATE ORIENTATION du reporting CIP (alertes délai 1er RDV, stats d’orientations). C’est la clé à privilégier pour créer ou mettre à jour un bénéficiaire depuis une ligne d’orientation."
+    },
+    {
+      "cleBeneficiaire": "dateOrientation",
+      "cleOrientation": "Date création orientation",
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": "date | null",
+      "Descriptif": "Correspondance secondaire. Date de saisie administrative au CD Ain, parfois identique à Date début orientation RSA, parfois antérieure ou légèrement décalée. Ne l’utiliser pour dateOrientation que si Date début orientation RSA est vide. Ne pas l’écraser si une date de début existe déjà."
+    },
+    {
+      "cleBeneficiaire": "datePremierRdv",
+      "cleOrientation": "datePremierRdv",
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": "date | null (clé applicative, absente du canevas Excel d’origine)",
+      "Descriptif": "Même champ métier (premier rendez-vous CIP). Côté orientation, la clé n’existe pas dans le fichier CD Ain : elle est ajoutée lors de l’attribution (page Attribution CDS). Un transfert n’a de sens que si la date a été saisie et que le statut d’attribution le justifie. Formats identiques (BSON Date)."
+    },
+    {
+      "cleBeneficiaire": "statut",
+      "cleOrientation": "statut",
+      "formatBeneficiaire": "enum string : « actif » | « sortie »",
+      "formatOrientation": "enum string : « En attente » | « OK » (anciennement aussi « En cours », normalisé en OK)",
+      "Descriptif": "HOMONYMIE SANS ÉQUIVALENCE MÉTIER. Ne pas copier l’une vers l’autre. Le statut bénéficiaire décrit le parcours d’accompagnement (toujours en suivi / sorti). Le statut d’orientation décrit le workflow interne d’attribution CDS/CIP. Une ligne « OK » peut devenir un bénéficiaire « actif » ; ce n’est pas une traduction de vocable, c’est une règle métier à part."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "N° ligne",
+      "formatBeneficiaire": null,
+      "formatOrientation": "integer",
+      "Descriptif": "Numéro d’ordre dans le fichier CD Ain, propre à un export. Aucun équivalent sur le bénéficiaire (l’identité Mongo est _id). Utile uniquement pour tracer la ligne source dans un journal d’import, pas pour fusionner les dossiers."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "NIR",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (identifiant, chiffres conservés en texte pour ne pas perdre les zéros ; 13 caractères dans le canevas observé)",
+      "Descriptif": "Identifiant national de santé / immatriculation. Présent uniquement dans l’extrait CD Ain. Volontairement absent du modèle bénéficiaire (donnée personnelle sensible ; consigne projet : pas de log ni de stockage NIR). Ne pas transférer vers beneficiaires tant qu’un cadre légal et un chiffrement n’ont pas été décidés. Peut servir de clé de rapprochement future dans une collection dédiée, pas dans la fiche CIP."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Date naissance",
+      "formatBeneficiaire": null,
+      "formatOrientation": "date | null",
+      "Descriptif": "Date de naissance officielle CD Ain. Le bénéficiaire ne la stocke pas : seul l’âge (entier, instantané reporting) existe. Un transfert pourrait calculer age à partir de cette date, mais ne doit pas inventer une clé dateNaissance sur le bénéficiaire sans évolution du schéma."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Adresse",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string",
+      "Descriptif": "Voie et complément d’adresse postale. Hors modèle bénéficiaire actuel (le reporting CIP n’a pas de colonne adresse). À conserver côté orientation pour l’attribution territoriale ; ne pas forcer une copie tant que la fiche bénéficiaire n’inclut pas le domicile."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "CP",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (5 chiffres, zéros non significatifs conservés, ex. « 01140 »)",
+      "Descriptif": "Code postal. Stocké en chaîne (et non en nombre) pour préserver le 0 initial de l’Ain. Pas d’équivalent bénéficiaire. Peut aider à proposer un CDS, pas à identifier la personne."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Ville",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (souvent en majuscules dans l’export CD Ain)",
+      "Descriptif": "Commune de résidence. Absente du bénéficiaire. Complète Adresse + CP pour l’affectation CDS ; graphie à normaliser (accents, Saint/St) si l’on s’en sert comme critère."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Tél. mobile",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (identifiant téléphonique ; 0 initial rétabli si Excel a stocké 9 chiffres)",
+      "Descriptif": "Téléphone mobile. Hors périmètre de la fiche bénéficiaire V1. Ne pas transférer sans décision d’enrichir le modèle et sans règle de confidentialité."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Tél. Fixe",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (même traitement que Tél. mobile) | null",
+      "Descriptif": "Téléphone fixe, souvent vide. Même statut que Tél. mobile : donnée de contact CD Ain, absente du bénéficiaire."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Adresse mail",
+      "formatBeneficiaire": null,
+      "formatOrientation": "mail | null (minuscule après parseur)",
+      "Descriptif": "Courriel de la personne. Absent du bénéficiaire. Ne pas le confondre avec le mail professionnel des salariés CIP (salariescip.ldap.MAIL_PRO)."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Orientation",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (libellé de mesure, ex. « Parcours socio-professionnel - orientation vers délégataire »)",
+      "Descriptif": "Type d’orientation CD Ain, pas le statut de parcours CIP. N’a pas d’équivalent dans Beneficiaire (pas de champ typeOrientation). Informative pour qualifier l’entrée ; ne mappe ni vers statut, ni vers motifSortie, ni vers typeSortie."
+    },
+    {
+      "cleBeneficiaire": null,
+      "cleOrientation": "Service intervenant (tiers)",
+      "formatBeneficiaire": null,
+      "formatOrientation": "string (ex. « ASSOCIATION VALHORIZON »)",
+      "Descriptif": "Opérateur délégataire désigné par le CD Ain. Côté bénéficiaire, l’opérateur vit sur la structure (structures.operateur), pas sur la personne. Un transfert éventuel vise la structure ou un contrôle d’appartenance, pas une clé de la fiche bénéficiaire."
+    },
+    {
+      "cleBeneficiaire": "_id",
+      "cleOrientation": null,
+      "formatBeneficiaire": "objectId",
+      "formatOrientation": null,
+      "Descriptif": "Identifiant Mongo de la fiche. L’item d’orientation n’a pas d’_id propre (ce n’est pas un document, c’est un élément de tableau). Le lien futur se fera par rapprochement nominatif ou par une clé d’association à créer, pas par copie d’ObjectId."
+    },
+    {
+      "cleBeneficiaire": "structureId",
+      "cleOrientation": null,
+      "formatBeneficiaire": "objectId (réf. structures)",
+      "formatOrientation": null,
+      "Descriptif": "Rattachement à la structure CIP (fichier reporting : CIP × territoire × lot). L’orientation CD Ain n’exprime pas cette maille : on la déduit après attribution CIP/CDS, ou on la laisse vide tant que la personne n’est pas entrée dans un reporting. Ne pas inventer d’ObjectId depuis data[]."
+    },
+    {
+      "cleBeneficiaire": "territoire",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string (ex. « CDS OYONNAX NANTUA »)",
+      "formatOrientation": null,
+      "Descriptif": "Libellé de territoire lu dans l’en-tête du reporting CIP. Pas de colonne homologue dans data[]. Une approximation peut être dérivée du CDS ou du CLPE CD Ain, uniquement via un référentiel, pas par homonymie de clé."
+    },
+    {
+      "cleBeneficiaire": "niveauScolaire",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string",
+      "formatOrientation": null,
+      "Descriptif": "Niveau scolaire du reporting CIP. Absent de la liste d’orientations. Aucune correspondance : le transfert CD Ain → bénéficiaire ne doit pas vider ni inventer cette valeur."
+    },
+    {
+      "cleBeneficiaire": "ceSigne6",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de signature du contrat d’engagement 6 mois. Suivi CIP exclusivement. L’orientation CD Ain décrit l’entrée, pas le CE."
+    },
+    {
+      "cleBeneficiaire": "finCe6",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Fin de CE 6 mois. Même remarque : hors canevas d’orientation."
+    },
+    {
+      "cleBeneficiaire": "ceSigne12",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de signature du CE 12 mois (seconde colonne homonyme C.E SIGNE du reporting). Hors orientation CD Ain."
+    },
+    {
+      "cleBeneficiaire": "finCe12",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Fin de CE 12 mois. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "dateSortie",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de sortie du parcours CIP. La feuille « arrets » du classeur CD Ain contient Date fin d’orientation / Type d’arrêt / Motif arrêt, mais ces clés ne sont pas celles de data[] de la feuille orientations importée. Ne pas mapper ici ; un mapping arrêts ferait l’objet d’un document distinct."
+    },
+    {
+      "cleBeneficiaire": "bilanType",
+      "cleOrientation": null,
+      "formatBeneficiaire": "enum string | null : « renouvellement » | « reo_ft » | « tripartite »",
+      "formatOrientation": null,
+      "Descriptif": "Type de bilan de parcours CIP. Inexistant dans la liste d’orientations (entrée de parcours, pas bilan)."
+    },
+    {
+      "cleBeneficiaire": "bilanDate7",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de bilan du 7e mois. Suivi CIP, sans équivalent orientation."
+    },
+    {
+      "cleBeneficiaire": "bilanDate14",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de bilan du 14e mois. Suivi CIP, sans équivalent orientation."
+    },
+    {
+      "cleBeneficiaire": "freins",
+      "cleOrientation": null,
+      "formatBeneficiaire": "array de string",
+      "formatOrientation": null,
+      "Descriptif": "Freins saisis dans le reporting (colonnes 1 / 2 / autre). Absents de l’orientation CD Ain."
+    },
+    {
+      "cleBeneficiaire": "offresEmploi",
+      "cleOrientation": null,
+      "formatBeneficiaire": "integer | null",
+      "formatOrientation": null,
+      "Descriptif": "Compteur d’offres d’emploi du suivi CIP. Pas d’équivalent dans data[]."
+    },
+    {
+      "cleBeneficiaire": "entretiensRecrutement",
+      "cleOrientation": null,
+      "formatBeneficiaire": "integer | null",
+      "formatOrientation": null,
+      "Descriptif": "Compteur d’entretiens de recrutement. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "pmsmp",
+      "cleOrientation": null,
+      "formatBeneficiaire": "boolean",
+      "formatOrientation": null,
+      "Descriptif": "Indicateur PMSMP (1 = oui dans Excel CIP). Hors liste d’orientations."
+    },
+    {
+      "cleBeneficiaire": "motifSortie",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string",
+      "formatOrientation": null,
+      "Descriptif": "Motif de sortie du reporting CIP. Ne pas le faire correspondre à Orientation ni à statut. Les motifs d’arrêt CD Ain sont sur une autre feuille (Motif arrêt), non importée dans data[]."
+    },
+    {
+      "cleBeneficiaire": "motifReo",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string",
+      "formatOrientation": null,
+      "Descriptif": "Motif de réorientation CIP. Sans équivalent dans l’item d’orientation."
+    },
+    {
+      "cleBeneficiaire": "typeSortie",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string",
+      "formatOrientation": null,
+      "Descriptif": "Type de sortie (positive, etc.). Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "fseCode",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string (ex. code dossier FSE type P44)",
+      "formatOrientation": null,
+      "Descriptif": "Saisie FSE du reporting. Absent de la liste CD Ain. Ne pas confondre avec les codes besoin P01–P15 de l’onglet CODIFICATION ACTIVITE."
+    },
+    {
+      "cleBeneficiaire": "dispositifs",
+      "cleOrientation": null,
+      "formatBeneficiaire": "array d’objets { nom: string, valeur: string }",
+      "formatOrientation": null,
+      "Descriptif": "Dispositifs d’accompagnement (FLE, MIFE, mobilité, etc.). Propres au suivi CIP, absents de l’orientation d’entrée."
+    },
+    {
+      "cleBeneficiaire": "commentaires",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string",
+      "formatOrientation": null,
+      "Descriptif": "Commentaires / observations du reporting CIP. Pas de colonne commentaires dans data[]."
+    },
+    {
+      "cleBeneficiaire": "projetProfessionnel",
+      "cleOrientation": null,
+      "formatBeneficiaire": "string (saisi dans l’application, hors Excel)",
+      "formatOrientation": null,
+      "Descriptif": "Champ applicatif, absent des deux Excel sources. Aucune clé d’orientation à associer."
+    },
+    {
+      "cleBeneficiaire": "absences",
+      "cleOrientation": null,
+      "formatBeneficiaire": "object { avantCe1, avantCe2, mois }",
+      "formatOrientation": null,
+      "Descriptif": "Bloc d’absentéisme du reporting. Sans équivalent dans la liste d’orientations."
+    },
+    {
+      "cleBeneficiaire": "absences.avantCe1",
+      "cleOrientation": null,
+      "formatBeneficiaire": "integer (défaut 0)",
+      "formatOrientation": null,
+      "Descriptif": "Absences avant signature du premier CE. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "absences.avantCe2",
+      "cleOrientation": null,
+      "formatBeneficiaire": "integer (défaut 0)",
+      "formatOrientation": null,
+      "Descriptif": "Absences avant second CE. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "absences.mois",
+      "cleOrientation": null,
+      "formatBeneficiaire": "array de 12 integer (cumul mensuel)",
+      "formatOrientation": null,
+      "Descriptif": "Absences mensuelles après CE. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "suspensions",
+      "cleOrientation": null,
+      "formatBeneficiaire": "object { demande, dateDemande, dateCourrierCds, manifeste }",
+      "formatOrientation": null,
+      "Descriptif": "Demandes d’étude de situation / suspension. Processus CIP, absent de data[]."
+    },
+    {
+      "cleBeneficiaire": "suspensions.demande",
+      "cleOrientation": null,
+      "formatBeneficiaire": "boolean",
+      "formatOrientation": null,
+      "Descriptif": "Indicateur de demande d’étude de situation. Pas d’équivalent orientation."
+    },
+    {
+      "cleBeneficiaire": "suspensions.dateDemande",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date de la demande de suspension. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "suspensions.dateCourrierCds",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date | null",
+      "formatOrientation": null,
+      "Descriptif": "Date du courrier CDS lié à la suspension. Ne pas confondre avec la clé CDS de l’orientation (libellé de lieu, pas une date)."
+    },
+    {
+      "cleBeneficiaire": "suspensions.manifeste",
+      "cleOrientation": null,
+      "formatBeneficiaire": "boolean | null",
+      "formatOrientation": null,
+      "Descriptif": "La personne s’est-elle manifestée après courrier. Suivi CIP uniquement."
+    },
+    {
+      "cleBeneficiaire": "lastImportBatchId",
+      "cleOrientation": null,
+      "formatBeneficiaire": "objectId | null (réf. importbatches)",
+      "formatOrientation": null,
+      "Descriptif": "Dernier lot d’import du reporting CIP. Technique interne, sans lien avec l’_id du document orientationimports. En cas de transfert, on pourra mémoriser l’identifiant d’import d’orientation dans un champ nouveau, pas dans celui-ci."
+    },
+    {
+      "cleBeneficiaire": "createdAt",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date (horodatage Mongoose du document bénéficiaire)",
+      "formatOrientation": null,
+      "Descriptif": "Métadonnée de fiche, pas une date métier d’orientation. L’horodatage de l’import CD Ain vit sur le document parent orientationimports.createdAt, pas sur l’item data[]. Ne pas mapper vers Date création orientation."
+    },
+    {
+      "cleBeneficiaire": "updatedAt",
+      "cleOrientation": null,
+      "formatBeneficiaire": "date",
+      "formatOrientation": null,
+      "Descriptif": "Dernière mise à jour de la fiche bénéficiaire. Sans équivalent sur l’item d’orientation."
+    }
+  ]
+}

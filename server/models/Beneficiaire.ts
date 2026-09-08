@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 
 const beneficiaireSchema = new Schema({
-  structureId: { type: Schema.Types.ObjectId, ref: 'Structure', required: true, index: true },
+  structureId: { type: Schema.Types.ObjectId, ref: 'Structure', default: null, index: true },
   cipNom: { type: String, default: '' },
   clpe: { type: String, default: '' },
   territoire: { type: String, default: '' },
@@ -52,7 +52,9 @@ const beneficiaireSchema = new Schema({
     dateCourrierCds: { type: Date, default: null },
     manifeste: { type: Boolean, default: null }
   },
-  lastImportBatchId: { type: Schema.Types.ObjectId, ref: 'ImportBatch', default: null }
+  lastImportBatchId: { type: Schema.Types.ObjectId, ref: 'ImportBatch', default: null },
+  // Mixed justifié : sous-document issu du canevas CD Ain (colonnes hors modèle CIP, mapping évolutif).
+  orientation: { type: Schema.Types.Mixed, default: null }
 }, { timestamps: true })
 
 beneficiaireSchema.index({ structureId: 1, nomNormalise: 1, prenomNormalise: 1 }, { unique: true })

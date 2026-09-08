@@ -66,6 +66,97 @@ export interface OrientationRow {
   [colonne: string]: OrientationFieldValue
 }
 
+export const ORIENTATION_ROW_STATUT_DEFAULT = 'En attente'
+export const ORIENTATION_ROW_STATUT_OK = 'OK'
+export const ORIENTATION_ROW_STATUT_SUIVI = 'SUIVI'
+
+export const ORIENTATION_ROW_STATUT_OPTIONS = [
+  ORIENTATION_ROW_STATUT_DEFAULT,
+  ORIENTATION_ROW_STATUT_OK
+] as const
+
+export type OrientationRowStatutEditable = typeof ORIENTATION_ROW_STATUT_OPTIONS[number]
+export type OrientationRowStatut = OrientationRowStatutEditable | typeof ORIENTATION_ROW_STATUT_SUIVI
+
+export function normalizeOrientationRowStatut(value: string): OrientationRowStatut {
+  if (value === ORIENTATION_ROW_STATUT_SUIVI) return ORIENTATION_ROW_STATUT_SUIVI
+  if (value === 'En cours') return ORIENTATION_ROW_STATUT_OK
+  return ORIENTATION_ROW_STATUT_OPTIONS.includes(value as OrientationRowStatutEditable)
+    ? value as OrientationRowStatutEditable
+    : ORIENTATION_ROW_STATUT_DEFAULT
+}
+
+export function buildStatutSelectItems(): { label: string, value: OrientationRowStatutEditable }[] {
+  return ORIENTATION_ROW_STATUT_OPTIONS.map(value => ({ label: value, value }))
+}
+
+export function isOrientationRowOk(statut: string): boolean {
+  return normalizeOrientationRowStatut(statut) === ORIENTATION_ROW_STATUT_OK
+}
+
+export function isOrientationRowSuivi(statut: string): boolean {
+  return normalizeOrientationRowStatut(statut) === ORIENTATION_ROW_STATUT_SUIVI
+}
+
+export function findOrientationRowKey(row: OrientationRow, field: string): string {
+  const target = normalizeFieldLabel(field)
+  return Object.keys(row).find(key => normalizeFieldLabel(key) === target) || field
+}
+
+export interface AttributionRowSavePayload {
+  rowIndex: number
+  cds: string
+  cip: string
+  datePremierRdv: string
+  statut: string
+}
+
+export interface MappingImportBeneficiaireItem {
+  cleBeneficiaire: string | null
+  cleOrientation: string | null
+  formatBeneficiaire?: string | null
+  formatOrientation?: string | null
+  Descriptif?: string
+}
+
+export interface MappingImportBeneficiaire {
+  meta?: Record<string, unknown>
+  mapping: MappingImportBeneficiaireItem[]
+}
+
+export function mappingImportBeneficiaireItems(raw: unknown): MappingImportBeneficiaireItem[] {
+  if (!raw || typeof raw !== 'object') return []
+  const mapping = (raw as { mapping?: unknown }).mapping
+  if (!Array.isArray(mapping)) return []
+  return mapping.filter((item): item is MappingImportBeneficiaireItem => {
+    if (!item || typeof item !== 'object') return false
+    const entry = item as MappingImportBeneficiaireItem
+    const beneficiaireOk = entry.cleBeneficiaire == null || typeof entry.cleBeneficiaire === 'string'
+    const orientationOk = entry.cleOrientation == null || typeof entry.cleOrientation === 'string'
+    return beneficiaireOk && orientationOk
+  })
+}
+
+export function withOrientationRowStatut(rows: OrientationRow[]): OrientationRow[] {
+  return rows.map(row => ({
+    ...row,
+    statut: orientationFieldText(row, 'statut') || ORIENTATION_ROW_STATUT_DEFAULT
+  }))
+}
+
+export function appendOrientationStatutColumn(
+  columns: OrientationColumn[],
+  keys: string[]
+): { columns: OrientationColumn[], keys: string[] } {
+  if (keys.includes('statut')) {
+    return { columns, keys }
+  }
+  return {
+    columns: [...columns, { nom: 'statut', type: 'string' }],
+    keys: [...keys, 'statut']
+  }
+}
+
 export interface OrientationColumn {
   nom: string
   type: OrientationValueType
@@ -104,6 +195,8 @@ export interface AttributionCdsRow {
   ville: string
   cds: string
   cip: string
+  datePremierRdv: string
+  statut: OrientationRowStatut
 }
 
 export type AttributionCdsTableFilter = 'all' | 'cds' | 'cip'
@@ -211,7 +304,7 @@ export function buildCdsSelectItems(cdsOptions: string[], currentCds = ''): { la
   ]
 }
 
-function normalizeCdsLabel(value: string): string {
+function normalizeFieldLabel(value: string): string {
   return value
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
@@ -222,12 +315,47 @@ function normalizeCdsLabel(value: string): string {
     .trim()
 }
 
+function normalizeCdsLabel(value: string): string {
+  return normalizeFieldLabel(value)
+}
+
 export function orientationFieldText(row: OrientationRow, header: string): string {
-  const target = normalizeCdsLabel(header)
+  const target = normalizeFieldLabel(header)
   for (const [key, value] of Object.entries(row)) {
-    if (normalizeCdsLabel(key) !== target) continue
+    if (normalizeFieldLabel(key) !== target) continue
     if (value == null || value === '') return ''
     return String(value)
+  }
+  return ''
+}
+
+export function orientationFieldRaw(row: OrientationRow, header: string): OrientationFieldValue {
+  const target = normalizeFieldLabel(header)
+  for (const [key, value] of Object.entries(row)) {
+    if (normalizeFieldLabel(key) !== target) continue
+    return value ?? null
+  }
+  return null
+}
+
+function formatIsoDateUtc(date: Date): string {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
+}
+
+export function orientationFieldIsoDate(row: OrientationRow, header: string): string {
+  const target = normalizeFieldLabel(header)
+  for (const [key, value] of Object.entries(row)) {
+    if (normalizeFieldLabel(key) !== target) continue
+    if (value == null || value === '') return ''
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? '' : formatIsoDateUtc(value)
+    }
+    if (typeof value === 'string') {
+      const isoMatch = /^(\d{4}-\d{2}-\d{2})/.exec(value.trim())
+      if (isoMatch) return isoMatch[1]
+      const parsed = new Date(value)
+      return Number.isNaN(parsed.getTime()) ? '' : formatIsoDateUtc(parsed)
+    }
   }
   return ''
 }
@@ -249,7 +377,9 @@ export function toAttributionCdsRows(rows: OrientationRow[], cdsOptions: string[
     cp: orientationFieldText(row, 'CP'),
     ville: orientationFieldText(row, 'Ville'),
     cds: matchCdsOption(orientationFieldText(row, 'CDS'), cdsOptions),
-    cip: orientationFieldText(row, 'CIP')
+    cip: orientationFieldText(row, 'CIP'),
+    datePremierRdv: orientationFieldIsoDate(row, 'datePremierRdv'),
+    statut: normalizeOrientationRowStatut(orientationFieldText(row, 'statut'))
   }))
 }
 

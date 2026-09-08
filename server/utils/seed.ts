@@ -60,13 +60,25 @@ export async function seedApp() {
         'FT acco glo'
       ],
       dispositifs: [...DEFAULT_DISPOSITIFS],
-      cds: [...DEFAULT_CDS]
+      cds: [...DEFAULT_CDS],
+      mapping_import_beneficiaire: loadMappingImportBeneficiaire()
     })
     return
   }
 
+  let settingsChanged = false
+
   if (!Array.isArray(settings.cds) || settings.cds.length === 0) {
     settings.cds = [...DEFAULT_CDS]
+    settingsChanged = true
+  }
+
+  if (!settings.mapping_import_beneficiaire) {
+    settings.mapping_import_beneficiaire = loadMappingImportBeneficiaire()
+    settingsChanged = true
+  }
+
+  if (settingsChanged) {
     await settings.save()
   }
 

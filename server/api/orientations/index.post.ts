@@ -25,6 +25,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const { columns, keys } = appendOrientationStatutColumn(parsed.columns, parsed.keys)
+  const data = withOrientationRowStatut(parsed.data)
+
   const created = await OrientationImport.create({
     filename,
     importedBy: event.context.user?._id ?? null,
@@ -32,11 +35,11 @@ export default defineEventHandler(async (event) => {
     ligne2: parsed.ligne2,
     documentDate: parsed.documentDate,
     sheetName: parsed.sheetName,
-    columns: parsed.columns,
-    keys: parsed.keys,
-    rowCount: parsed.data.length,
+    columns,
+    keys,
+    rowCount: data.length,
     warnings: parsed.warnings,
-    data: parsed.data
+    data
   })
 
   const populated = await OrientationImport.findById(created._id)

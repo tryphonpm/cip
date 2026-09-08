@@ -21,6 +21,14 @@
     @apply mt-1 text-muted;
   }
 
+  .nav-separator {
+    @apply my-2 border-t border-slate-200 dark:border-slate-800;
+  }
+
+  .nav-separator-inline {
+    @apply mx-1 h-5 w-px shrink-0 self-center bg-slate-200 dark:bg-slate-700;
+  }
+
   .section-title {
     @apply font-semibold text-slate-900 dark:text-white;
   }
@@ -75,6 +83,46 @@
 
   .import-filter {
     @apply max-w-xl;
+  }
+
+  .date-picker-button {
+    @apply min-w-40 justify-start;
+  }
+
+  .date-picker-panel {
+    @apply flex flex-col;
+  }
+
+  .date-picker-actions {
+    @apply flex justify-end border-t border-default px-2 py-1;
+  }
+
+  .statut-select {
+    @apply min-w-40;
+  }
+
+  .attribution-row-active {
+    @apply bg-green-50! dark:bg-green-950/30!;
+  }
+
+  .attribution-row-suivi {
+    @apply bg-yellow-50! dark:bg-yellow-950/30!;
+  }
+
+  .attribution-statut-label {
+    @apply inline-flex min-w-40 items-center rounded-md px-2.5 py-1.5 text-sm font-semibold uppercase tracking-wide text-yellow-800 dark:text-yellow-200;
+  }
+
+  .attribution-save-bar {
+    @apply flex flex-wrap justify-end items-center gap-3 border-t border-default pt-6 mt-6;
+  }
+
+  .attribution-save-button {
+    @apply min-w-56 justify-center font-semibold uppercase tracking-wide;
+  }
+
+  .attribution-suivi-button {
+    @apply min-w-56 justify-center font-semibold uppercase tracking-wide;
   }
 
   .attribution-filter-bar {
