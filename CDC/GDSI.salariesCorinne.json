@@ -1,0 +1,1118 @@
+[
+  {
+    "_id": {
+      "$oid": "6a4c8f21582b9632de52f62c"
+    },
+    "MATRICULE": 13,
+    "identite": {
+      "SA_NOM": "LEPINE",
+      "SA_PRENOM": "Annick",
+      "NOM_AFFICHAGE": "LEPINE Annick"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Annick.Lepine@alfa3a.org"
+    },
+    "CDS": "Croix Blanche"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f21582b9632de52f648"
+    },
+    "MATRICULE": 42,
+    "identite": {
+      "SA_NOM": "ROSSILLON",
+      "SA_PRENOM": "Adeline",
+      "NOM_AFFICHAGE": "ROSSILLON Adeline"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Adeline.Rossillon@alfa3a.org"
+    },
+    "CDS": "Belley"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f21582b9632de52f6e6"
+    },
+    "MATRICULE": 235,
+    "identite": {
+      "SA_NOM": "PARIS",
+      "SA_PRENOM": "Celine",
+      "NOM_AFFICHAGE": "PARIS Celine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS757",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_SE",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "St Didier sur Chalaronne"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f21582b9632de52f7b3"
+    },
+    "MATRICULE": 518,
+    "identite": {
+      "SA_NOM": "SUDER",
+      "SA_PRENOM": "Sandrine",
+      "NOM_AFFICHAGE": "SUDER Sandrine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS767",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "FACILIT",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Sandrine.SUDER@alfa3a.org"
+    },
+    "CDS": "Lagnieu"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f21582b9632de52f7e3"
+    },
+    "MATRICULE": 594,
+    "identite": {
+      "SA_NOM": "LEBICA",
+      "SA_PRENOM": "Severine",
+      "NOM_AFFICHAGE": "LEBICA Severine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Severine.LEBICA@alfa3a.org"
+    },
+    "CDS": "Pays de Gex"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52f819"
+    },
+    "MATRICULE": 674,
+    "identite": {
+      "SA_NOM": "ZAIED",
+      "SA_PRENOM": "Djamila",
+      "NOM_AFFICHAGE": "ZAIED Djamila"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Djamila.ZAIED@alfa3a.org"
+    },
+    "CDS": "Pays de Gex"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52f896"
+    },
+    "MATRICULE": 888,
+    "identite": {
+      "SA_NOM": "ROUX",
+      "SA_PRENOM": "Diana",
+      "NOM_AFFICHAGE": "ROUX Diana"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Diana.ROUX@alfa3a.org"
+    },
+    "CDS": "Oyonnax"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52f8a6"
+    },
+    "MATRICULE": 926,
+    "identite": {
+      "SA_NOM": "SARIGOL",
+      "SA_PRENOM": "Celine",
+      "NOM_AFFICHAGE": "SARIGOL Celine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "celine.sarigol@alfa3a.org"
+    },
+    "CDS": "Trevoux"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52f905"
+    },
+    "MATRICULE": 1197,
+    "identite": {
+      "SA_NOM": "PONS",
+      "SA_PRENOM": "Pascal",
+      "NOM_AFFICHAGE": "PONS Pascal"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Pascal.PONS@alfa3a.org"
+    },
+    "CDS": "Lagnieu"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52f94b"
+    },
+    "MATRICULE": 1358,
+    "identite": {
+      "SA_NOM": "REVEILLARD",
+      "SA_PRENOM": "Franck",
+      "NOM_AFFICHAGE": "REVEILLARD Franck"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Pays de Gex"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb0a"
+    },
+    "MATRICULE": 9991,
+    "identite": {
+      "SA_NOM": "KALI",
+      "SA_PRENOM": "Alexandrine",
+      "NOM_AFFICHAGE": "KALI Alexandrine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS401",
+      "FAMILLEEMPLOI": "SPE",
+      "CODESSFAMEMPLOI": "INFIR",
+      "CODEFAMEMPLOI": "SOINPARA_S"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Croix Blanche"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb41"
+    },
+    "MATRICULE": 10879,
+    "identite": {
+      "SA_NOM": "PETIT",
+      "SA_PRENOM": "Iphigenie",
+      "NOM_AFFICHAGE": "PETIT Iphigenie"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "ALFA723",
+      "FAMILLEEMPLOI": "ADM",
+      "CODESSFAMEMPLOI": "CA_REC",
+      "CODEFAMEMPLOI": "ACCREC_A"
+    },
+    "ldap": {
+      "MAIL_PRO": "Iphigenie.PETIT@alfa3a.org"
+    },
+    "CDS": "Pierre Goujon"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb63"
+    },
+    "MATRICULE": 11563,
+    "identite": {
+      "SA_NOM": "SULPICE",
+      "SA_PRENOM": "Catherine",
+      "NOM_AFFICHAGE": "SULPICE Catherine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Catherine.SULPICE@alfa3a.org"
+    },
+    "CDS": "Pays de Gex"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb93"
+    },
+    "MATRICULE": 12529,
+    "identite": {
+      "SA_NOM": "ROUX",
+      "SA_PRENOM": "Isabelle",
+      "NOM_AFFICHAGE": "ROUX Isabelle"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "St Didier sur Chalaronne"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb94"
+    },
+    "MATRICULE": 12531,
+    "identite": {
+      "SA_NOM": "SAKHO",
+      "SA_PRENOM": "Polel",
+      "NOM_AFFICHAGE": "SAKHO Polel"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "ALFA723",
+      "FAMILLEEMPLOI": "ADM",
+      "CODESSFAMEMPLOI": "CA_REC",
+      "CODEFAMEMPLOI": "ACCREC_A"
+    },
+    "ldap": {
+      "MAIL_PRO": "Polel.SAKHO@alfa3a.org"
+    },
+    "CDS": "Oyonnax"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb96"
+    },
+    "MATRICULE": 12546,
+    "identite": {
+      "SA_NOM": "TISSERAND",
+      "SA_PRENOM": "Soilie",
+      "NOM_AFFICHAGE": "TISSERAND Soilie"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Soilie.TISSERAND@alfa3a.org"
+    },
+    "CDS": "Montrevel"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb97"
+    },
+    "MATRICULE": 12548,
+    "identite": {
+      "SA_NOM": "GIRY",
+      "SA_PRENOM": "Christian",
+      "NOM_AFFICHAGE": "GIRY Christian"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Pont de Vaux"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb98"
+    },
+    "MATRICULE": 12550,
+    "identite": {
+      "SA_NOM": "VRAINE",
+      "SA_PRENOM": "Helene",
+      "NOM_AFFICHAGE": "VRAINE Helene"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Helene.VRAINE@alfa3a.org"
+    },
+    "CDS": "Lagnieu"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb99"
+    },
+    "MATRICULE": 12552,
+    "identite": {
+      "SA_NOM": "FONTANY",
+      "SA_PRENOM": "Stephanie",
+      "NOM_AFFICHAGE": "FONTANY Stephanie"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Stephanie.FONTANY@alfa3a.org"
+    },
+    "CDS": "Miribel"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb9a"
+    },
+    "MATRICULE": 12554,
+    "identite": {
+      "SA_NOM": "CHABRIERE",
+      "SA_PRENOM": "Magali",
+      "NOM_AFFICHAGE": "CHABRIERE Magali"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Belley"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb9b"
+    },
+    "MATRICULE": 12556,
+    "identite": {
+      "SA_NOM": "OU",
+      "SA_PRENOM": "Kim Ly",
+      "NOM_AFFICHAGE": "OU Kim Ly"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Kim.OU@alfa3a.org"
+    },
+    "CDS": "Miribel"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb9d"
+    },
+    "MATRICULE": 12561,
+    "identite": {
+      "SA_NOM": "BEN EL HAJ",
+      "SA_PRENOM": "Fadia",
+      "NOM_AFFICHAGE": "BEN EL HAJ Fadia"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "fadia.benelhaj@alfa3a.org"
+    },
+    "CDS": "Amberieu"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fb9e"
+    },
+    "MATRICULE": 12566,
+    "identite": {
+      "SA_NOM": "GAMBEY",
+      "SA_PRENOM": "Maelle",
+      "NOM_AFFICHAGE": "GAMBEY Maelle"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Maelle.GAMBEY@alfa3a.org"
+    },
+    "CDS": "Chatillon sur Chalaronne"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fc55"
+    },
+    "MATRICULE": 15169,
+    "identite": {
+      "SA_NOM": "BARAQUE",
+      "SA_PRENOM": "Justine",
+      "NOM_AFFICHAGE": "BARAQUE Justine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "ALFA723",
+      "FAMILLEEMPLOI": "ADM",
+      "CODESSFAMEMPLOI": "CA_REC",
+      "CODEFAMEMPLOI": "ACCREC_A"
+    },
+    "ldap": {
+      "MAIL_PRO": "Justine.BARAQUE@alfa3a.org"
+    },
+    "CDS": "Amberieu"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fc6e"
+    },
+    "MATRICULE": 15430,
+    "identite": {
+      "SA_NOM": "GAUTHIER",
+      "SA_PRENOM": "Sandrine",
+      "NOM_AFFICHAGE": "GAUTHIER Sandrine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Nantua"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fcca"
+    },
+    "MATRICULE": 16543,
+    "identite": {
+      "SA_NOM": "GUALDIERI",
+      "SA_PRENOM": "Audrey",
+      "NOM_AFFICHAGE": "GUALDIERI Audrey"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Oyonnax"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fcf1"
+    },
+    "MATRICULE": 16800,
+    "identite": {
+      "SA_NOM": "VANDECASTEELE",
+      "SA_PRENOM": "Adrien",
+      "NOM_AFFICHAGE": "VANDECASTEELE Adrien"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": null
+    },
+    "CDS": "Pierre Goujon"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fd43"
+    },
+    "MATRICULE": 17761,
+    "identite": {
+      "SA_NOM": "DAMOUNE",
+      "SA_PRENOM": "Nathalie",
+      "NOM_AFFICHAGE": "DAMOUNE Nathalie"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Nathalie.DAMOUNE@alfa3a.org"
+    },
+    "CDS": "St Didier sur Chalaronne"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fdb6"
+    },
+    "MATRICULE": 18718,
+    "identite": {
+      "SA_NOM": "COUTO",
+      "SA_PRENOM": "Marie Regine",
+      "NOM_AFFICHAGE": "COUTO Marie Regine"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Marie.COUTO@alfa3a.org"
+    },
+    "CDS": "Valserhone"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fe25"
+    },
+    "MATRICULE": 19775,
+    "identite": {
+      "SA_NOM": "CLERICI",
+      "SA_PRENOM": "Aviva",
+      "NOM_AFFICHAGE": "CLERICI Aviva"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Aviva.CLERICI@alfa3a.org"
+    },
+    "CDS": "Pierre Goujon"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fe26"
+    },
+    "MATRICULE": 19777,
+    "identite": {
+      "SA_NOM": "DECHAVANNES",
+      "SA_PRENOM": "Veronique",
+      "NOM_AFFICHAGE": "DECHAVANNES Veronique"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Veronique.DECHAVANNES@alfa3a.org"
+    },
+    "CDS": "Pierre Goujon"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fe68"
+    },
+    "MATRICULE": 20256,
+    "identite": {
+      "SA_NOM": "ES SOUABNI",
+      "SA_PRENOM": "Dahab",
+      "NOM_AFFICHAGE": "ES SOUABNI Dahab"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Dahab.ESSOUABNI@alfa3a.org"
+    },
+    "CDS": "Belley"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fe79"
+    },
+    "MATRICULE": 20336,
+    "identite": {
+      "SA_NOM": "CHAHLAOUI",
+      "SA_PRENOM": "Afida",
+      "NOM_AFFICHAGE": "CHAHLAOUI Afida"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS721",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_EF",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Afida.CHAHLAOUI@alfa3a.org"
+    },
+    "CDS": "Pierre Goujon"
+  },
+  {
+    "_id": {
+      "$oid": "6a4c8f22582b9632de52fe7f"
+    },
+    "MATRICULE": 20386,
+    "identite": {
+      "SA_NOM": "VINCEROT",
+      "SA_PRENOM": "Sarah",
+      "NOM_AFFICHAGE": "VINCEROT Sarah"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "emploi": {
+      "IDPOSTE": "PAS788",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "CONS_INS",
+      "CODEFAMEMPLOI": "EDUCAS_O"
+    },
+    "ldap": {
+      "MAIL_PRO": "Sarah.VINCEROT@alfa3a.org"
+    },
+    "CDS": "Belley"
+  },
+  {
+    "_id": {
+      "$oid": "6a4f23e54ac5790ecf11d68f"
+    },
+    "MATRICULE": 21417,
+    "emploi": {
+      "IDPOSTE": "STAG001",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "STA",
+      "CODEFAMEMPLOI": "STAGALT_O"
+    },
+    "identite": {
+      "SA_NOM": "AYVERDI",
+      "SA_PRENOM": "Hulya",
+      "NOM_AFFICHAGE": "AYVERDI Hulya"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "ldap": {
+      "MAIL_PRO": "Hulya.AYVERDI@alfa3a.org"
+    },
+    "CDS": "Pont de Vaux"
+  },
+  {
+    "_id": {
+      "$oid": "6a58494c4ac5790ecf1f21a5"
+    },
+    "MATRICULE": 21713,
+    "emploi": {
+      "IDPOSTE": "STAG001",
+      "FAMILLEEMPLOI": "OPE",
+      "CODESSFAMEMPLOI": "STA",
+      "CODEFAMEMPLOI": "STAGALT_O"
+    },
+    "identite": {
+      "SA_NOM": "SBORDONE",
+      "SA_PRENOM": "Emma",
+      "NOM_AFFICHAGE": "SBORDONE Emma"
+    },
+    "manager": {
+      "MANAGER": 166,
+      "complements_post": {
+        "DISPLAY_NAME": "Corinne DE VITIS"
+      }
+    },
+    "structure": {
+      "RQCODE": "126_MIFE_BOU",
+      "RQTITLE_FR": "MIFE"
+    },
+    "ldap": {
+      "MAIL_PRO": "Emma.SBORDONE@alfa3a.org"
+    },
+    "CDS": "Pierre Goujon"
+  }
+]

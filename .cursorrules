@@ -1,0 +1,235 @@
+# CIP+ — Cadre de développement
+
+Vous appliquez ces règles à **tous** les développements de ce dépôt. En cas de conflit avec une habitude personnelle, ce fichier prévaut.
+
+## Ton des échanges
+
+- Vous **vouvoyez** toujours l’interlocuteur (chat, commentaires, messages de commit proposés, textes d’interface de démonstration).
+- Vous n’employez jamais le tutoiement (« tu », « toi », « ton », « ta », « tes »).
+- Les textes métier de l’application (labels, titres, messages d’erreur) restent en **français** soutenu, vouvoiement compris lorsqu’ils s’adressent à l’utilisateur.
+
+## Contexte projet
+
+Application interne **ALFA3A** : statistiques et alertes CIP+ (accompagnement RSA).
+Stack cible : **Nuxt 4** (`app/`) + **Nitro** (`server/`) + **MongoDB / Mongoose** + **Tailwind CSS v4** + **Nuxt UI**.
+Données personnelles (RSA) : application locale, pas de commit des fichiers `.xlsx` ni des secrets (`.env`).
+
+Arborescence de référence :
+
+- `app/pages/` — pages minces (données + composition)
+- `app/components/` — composants d’interface réutilisables
+- `app/layouts/`, `app/composables/`, `app/stores/`, `app/assets/css/`
+- `server/api/`, `server/models/`, `server/utils/`, `server/middleware/`, `server/plugins/`
+- `shared/types/` — types et constantes partagés client / serveur
+
+---
+
+## 1. Interface : homogénéité graphique et ergonomique
+
+Ces quatre principes sont **non négociables**. Toute exception est rare, écrite et justifiée dans le fichier concerné.
+
+### 1.1 Chaque page `.vue` est constituée de composants standards
+
+Une page **orchestre**, elle ne dessine pas.
+
+- Une page se limite à : `definePageMeta`, chargement de données (`useFetch` / composables), et un template qui assemble des composants.
+- Interdit dans une page : markup structurel répétitif (en-tête de page recopié, grilles KPI artisanales, listes d’alertes, tableaux métier) dès qu’un composant existe ou qu’un motif apparaît une deuxième fois.
+- Vous **réutilisez** d’abord les composants du projet et de Nuxt UI (`UButton`, `UCard`, `UTable`, `UBadge`, `UInput`, `USelect`, `UFormField`, `UAlert`, `UIcon`, …).
+- Si un motif UI manque, vous **créez** un composant dans `app/components/` (nom PascalCase, une responsabilité), puis vous l’utilisez dans la page.
+- Composants standards déjà en place à réutiliser : `KpiCard`, `FilterBar`. Enrichissez-les plutôt que de les dupliquer. Exemples de composants à extraire dès qu’ils se répètent : `PageHeader`, `EmptyState`, `StatTable`, `AlertList`.
+
+Structure type d’une page :
+
+```vue
+<script setup lang="ts">
+definePageMeta({ layout: 'default' })
+// données uniquement
+</script>
+
+<template>
+  <div class="page-stack">
+    <PageHeader title="…" lead="…" />
+    <FilterBar v-model:cip="cip" /* … */ />
+    <KpiCard /* … */ />
+    <UCard><!-- contenu via composants --></UCard>
+  </div>
+</template>
+```
+
+### 1.2 Pas de section `<style>` dans les pages (sauf exception justifiée)
+
+- Les fichiers `app/pages/**/*.vue` **ne contiennent pas** de bloc `<style>` / `<style scoped>`.
+- Exception : uniquement si aucun token, aucune classe de thème, aucun composant Nuxt UI ne permet le résultat. Dans ce cas, un commentaire **au-dessus** du bloc explique le motif et la date :
+
+```vue
+<!-- Exception <style> (AAAA-MM-JJ) : [raison précise, alternative écartée] -->
+<style scoped>
+</style>
+```
+
+- Attributs `style=""` interdits dans les pages et les composants.
+
+### 1.3 Les composants se dessinent uniquement avec des classes Tailwind
+
+- Dans `app/components/**/*.vue` et `app/layouts/**/*.vue` : apparence = **classes Tailwind** (et props de thème Nuxt UI). Pas de CSS ad hoc, pas de CSS modules, pas de styles inline.
+- Vous n’inventez pas de couleurs / espacements / rayons « magiques » (`text-[#…]`, `p-[13px]`, `rounded-[7px]`). Si le besoin est réel, vous **ajoutez un token** au thème, puis vous l’utilisez.
+- Les icônes passent par `UIcon` et le jeu **Lucide** déjà fourni (`i-lucide-*`). Pas de second pack d’icônes.
+
+### 1.4 Toutes les classes sont centralisées dans le thème Tailwind
+
+Source unique du design system :
+
+1. **Tokens** — `app/assets/css/main.css`, bloc `@theme` (Tailwind v4) : couleurs, polices, rayons, ombres, espacements sémantiques.
+2. **Classes sémantiques** — le même fichier, `@layer components` (ou `@utility`) : classes nommées (`page-stack`, `page-title`, `page-lead`, `nav-link`, `kpi-grid`, …). Les pages et composants n’emploient **que** ces classes sémantiques + utilitaires de layout Tailwind stables (`flex`, `grid`, `gap-*`, `min-w-0`, …) lorsqu’aucun équivalent sémantique n’existe encore.
+3. **Thème Nuxt UI** — `app/app.config.ts` (`ui.colors`, variantes de composants). Couleurs produit : **primary = teal**, **neutral = slate**.
+
+Règles d’évolution du thème :
+
+- Avant d’écrire une nouvelle classe dans un `.vue`, vous vérifiez `main.css` et `app.config.ts`.
+- Si la classe n’existe pas, vous **l’ajoutez au thème** dans le même changement, avec un nom sémantique (rôle, pas apparence : `page-lead` plutôt que `text-slate-500-copy`).
+- Interdit d’accumuler des utilitaires « one-shot » dupliqués (`text-2xl font-semibold` recopié sur chaque page) : extraire `page-title` (ou équivalent) dans le thème.
+- `app.config.ts` reste le lieu des variantes Nuxt UI ; `main.css` reste le lieu des tokens et classes métier.
+
+Exemple (thème) :
+
+```css
+@theme static {
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-brand: var(--color-teal-700);
+  --color-muted: var(--color-slate-500);
+  --color-surface: var(--color-slate-50);
+}
+
+@layer components {
+  .page-stack { @apply space-y-8; }
+  .page-title { @apply text-2xl font-semibold; }
+  .page-lead { @apply text-muted; }
+}
+```
+
+---
+
+## 2. TypeScript — usage rigoureux
+
+- Tout fichier Vue : `<script setup lang="ts">`. Tout nouveau module serveur / partagé : `.ts`.
+- **Aucun `any`**, aucun `as any`, aucun `@ts-ignore` / `@ts-nocheck` sans justification écrite sur la ligne précédente.
+- Types métier et unions : `shared/types/index.ts` (ou fichier dédié sous `shared/types/`). Pas de types métier dupliqués dans les pages.
+- Props, emits, `defineModel` : toujours typés. Réponses API : interfaces dédiées, pas d’objets anonymes qui fuient dans l’UI.
+- Erreurs : `unknown` puis affinage (`e instanceof Error`, champs `data`/`statusCode` Nitro), jamais `catch (e: any)`.
+- Mongoose : schémas alignés sur les types partagés ; pas de `Mixed` sans justification.
+- Vous faites passer `npm run typecheck` (ou `nuxt typecheck`) après un changement de types. Un code qui ne typecheck pas n’est pas terminé.
+- Préférez `const` + inférence, unions discriminées, `satisfies`, plutôt que des assertions `as` de commodité.
+
+---
+
+## 3. Conventions Nuxt / serveur
+
+- Composition API uniquement. Auto-imports Nuxt : ne pas ré-importer `ref`, `useFetch`, `defineEventHandler`, etc.
+- API : un fichier par route Nitro (`server/api/**/*.get.ts`, `*.post.ts`, `*.patch.ts`). Validation des entrées, codes HTTP explicites, messages d’erreur en français.
+- Accès Mongo : modèles dans `server/models/`, connexion via `server/utils/db.ts` / plugin `server/plugins/mongo.ts`. Pas de second client Mongo.
+- Parseur reporting : `server/utils/parseCipWorkbook.ts` (exceljs). Alertes : `server/utils/computeAlerts.ts`. Stats : `server/utils/computeStats.ts`. Vous étendez ces modules, vous n’en créez pas de parallèles.
+- Auth : sessions Nitro + `bcryptjs`. Pas de JWT / NextAuth / autre lib d’auth tant qu’elle n’est pas inscrite ci-dessous.
+- UI et API en français. Locale HTML : `fr`.
+
+### 3.1 État client — Pinia (obligatoire si déclencheur atteint)
+
+**Par défaut** : composables Nuxt (`useAuth`, `useFilters`, …) + `useFetch` / `$fetch` suffisent. Pas de Pinia « préventif ».
+
+**Obligation d’introduire Pinia** dès qu’**au moins un** des besoins suivants apparaît dans un développement. Vous n’utilisez alors **ni** composable global ad hoc (`ref`/`reactive` exportés), **ni** `provide`/`inject` maison, **ni** second gestionnaire d’état :
+
+| Déclencheur | Exemple CIP+ | Store attendu (indicatif) |
+|---|---|---|
+| **État partagé entre pages** sans rechargement ni duplication | Filtres CIP / CLPE / CDS / statut conservés en naviguant entre tableau de bord, statistiques, alertes et bénéficiaires | `useFiltersStore` |
+| **Données « chaudes » après une action** avec invalidation coordonnée | Après un import reporting : rafraîchir stats, alertes ouvertes et compteurs KPI sans multiplier les `refresh()` dispersés | `useImportStore` ou actions dans un store dédié |
+| **Session et préférences utilisateur** lues ou modifiées depuis plusieurs écrans | Rôle, périmètre visible (structures / CIP), paramètres d’affichage, délai 1er RDV consulté hors page Paramètres | `useAuthStore`, `useSettingsStore` |
+| **Actions métier** dont l’effet doit se propager à plusieurs vues | Résoudre une alerte, modifier un projet professionnel : mise à jour synchronisée liste, fiche, KPI | `useAlertsStore`, `useBeneficiairesStore` |
+
+**Procédure lorsqu’un déclencheur est atteint** (dans le **même** changement) :
+
+1. Installer `pinia` + `@pinia/nuxt` et activer le module dans `nuxt.config.ts`.
+2. Créer ou étendre le store dans `app/stores/` (`defineStore`, nom `useXxxStore`, état et getters typés).
+3. Migrer la logique depuis les composables ou pages concernées ; les composables restent autorisés pour de la logique **locale** ou **sans état partagé**.
+4. Mettre à jour le catalogue §4.1 (Pinia y est déjà inscrit).
+
+**Règles d’implémentation** :
+
+- Un store = un domaine métier ou transversal clair ; pas de « store fourre-tout ».
+- État serveur : Pinia **orchestre** (cache, sélection, invalidation) ; la source de vérité reste l’API Nitro + MongoDB.
+- Stores typés (`shared/types/` pour les payloads métier). Pas de `any` dans l’état.
+- Actions async : erreurs gérées (`unknown`), messages utilisateur en français.
+
+---
+
+## 4. Catalogue des dépendances (source de vérité)
+
+Toute librairie utilisée **doit** figurer ici, avec son rôle et ses règles d’emploi.  
+Avant d’ajouter un paquet, vous lisez ce catalogue : s’il existe déjà un outil pour le besoin, **vous l’utilisez**.
+
+### 4.1 Dépendances runtime (`package.json` → `dependencies`)
+
+| Paquet | Rôle | Emploi obligatoire / interdit |
+|---|---|---|
+| `nuxt` | Framework Vue (app + Nitro) | Socle unique. Pas de Vite/Vue CLI parallèle. |
+| `@nuxt/ui` | Kit UI (basé Tailwind) | Formulaires, tables, cartes, boutons, alertes, icônes. Interdit de recoder un équivalent ad hoc. |
+| `tailwindcss` | Utilitaires + `@theme` | Seul moteur de style. Voir §1. |
+| `@iconify-json/lucide` | Jeu d’icônes Lucide pour Nuxt UI | `UIcon` + préfixe `i-lucide-`. Pas d’autre pack (`heroicons`, `mdi`, …) sans inscription ici. |
+| `mongoose` | ODM MongoDB | Tous les modèles et requêtes métier. Pas de driver `mongodb` brut, sauf exception justifiée dans un utilitaire bas niveau. |
+| `exceljs` | Lecture / écriture `.xlsx` | **Seul** parseur des fichiers reporting CIP. Interdit d’ajouter `xlsx`, `sheetjs`, `excel4node`, etc. |
+| `bcryptjs` | Hash des mots de passe | Auth uniquement. Pas d’autre lib de hash (`bcrypt` natif, `argon2`, …) sans inscription ici. |
+| `mongodb-memory-server` | Mongo en mémoire | Dev / tests / repli local **uniquement**. Jamais en production. |
+| `pinia` | Gestion d’état client | **Obligatoire** dès qu’un déclencheur §3.1 est atteint. Stores dans `app/stores/`. Interdit : composable global, `provide`/`inject` ou autre store (Redux, Vuex) pour couvrir le même besoin. |
+| `@pinia/nuxt` | Intégration Pinia / Nuxt | Module Nuxt à activer avec `pinia`. À installer **en même temps** que `pinia`, uniquement lors du premier besoin §3.1. |
+
+### 4.2 Dépendances de développement
+
+| Paquet | Rôle | Emploi |
+|---|---|---|
+| `typescript` | Compilateur TS | Configuration via `tsconfig.json` / Nuxt. Pas de JS non typé. |
+| `vue-tsc` | Vérification des SFC Vue | Via `nuxt typecheck`. |
+
+### 4.3 Dépendances volontairement absentes (ne pas les introduire)
+
+- Autre framework UI (`Vuetify`, `Quasar`, `PrimeVue`, `Element Plus`) — Nuxt UI suffit.
+- Autre solution CSS (`Sass` pour le design system, `styled-components`, CSS modules de page) — Tailwind + thème.
+- ORM / query builder SQL, autre ODM (`Prisma`, `TypeORM`, `Drizzle`) — Mongoose.
+- Client HTTP supplémentaire (`axios`) — `$fetch` / `useFetch` Nuxt.
+- Autre gestionnaire d’état (`vuex`, Redux, composable global avec `ref` exportés pour l’état partagé) — Pinia §3.1 dès qu’un déclencheur est atteint.
+- Librairie de dates (`dayjs`, `date-fns`, `luxon`) : **absente aujourd’hui**. Dates Excel → `Date` JS dans le parseur. Si un formatage complexe s’impose, inscrire **une** lib ici avant tout import.
+- Auth tierce (`nuxt-auth`, `lucia`, `better-auth`) — sessions Nitro actuelles.
+
+---
+
+## 5. Ajout d’une librairie (procédure obligatoire)
+
+Aucun `npm install` / ajout à `package.json` n’est complet tant que **ce fichier** n’est pas mis à jour **dans le même changement**.
+
+Vous devez, dans `.cursorrules` §4 :
+
+1. Nommer le paquet et son rôle en une phrase.
+2. Indiquer **quand** l’utiliser et **quoi interdire** (doublon évité).
+3. Justifier pourquoi aucune dépendance déjà listée ne convient.
+4. Si une ancienne lib devient inutile : la **retirer** de `package.json` **et** de ce catalogue.
+
+Interdit :
+
+- d’ajouter une dépendance « au cas où » ;
+- d’en installer une deuxième pour le même besoin (ex. second parseur Excel, second kit UI, second hash) ;
+- de laisser une dépendance listée ici mais absente de `package.json`, ou l’inverse.
+
+---
+
+## 6. Qualité, sécurité, hors périmètre
+
+- Données RSA : pas de log de NIR / pièces d’identité ; pas de commit de fichiers reporting.
+- Secrets : `.env` / `.env.example` uniquement ; jamais de secrets dans le code.
+- Vérification UI : après un changement d’écran, parcourir le flux concerné (pas seulement un rendu statique).
+- Hors V1 : import des extraits CD Ain, saisie quotidienne type tableur, multi-tenant complexe — ne pas les implémenter « en passant ».
+
+## 7. Auto-contrôle avant de déclarer un travail terminé
+
+- [ ] Page = composition de composants standards, sans `<style>`
+- [ ] Composants = classes Tailwind uniquement ; nouvelles classes ajoutées au thème (`main.css` / `app.config.ts`)
+- [ ] TypeScript strict, types dans `shared/types` si métier
+- [ ] Aucune nouvelle dépendance, **ou** catalogue §4 mis à jour
+- [ ] Déclencheur §3.1 atteint → Pinia installé, store(s) dans `app/stores/`, pas de contournement composable global
+- [ ] Français + vouvoiement dans les échanges et les textes utilisateur

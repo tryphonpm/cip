@@ -1,5 +1,6 @@
 import { User } from '../models/User'
 import { Settings } from '../models/Settings'
+import { SalariesCip } from '../models/SalariesCip'
 
 export async function seedApp() {
   const config = useRuntimeConfig()
@@ -58,7 +59,16 @@ export async function seedApp() {
         'FT acc pro',
         'FT acco glo'
       ],
-      dispositifs: [...DEFAULT_DISPOSITIFS]
+      dispositifs: [...DEFAULT_DISPOSITIFS],
+      cds: [...DEFAULT_CDS]
     })
+    return
   }
+
+  if (!Array.isArray(settings.cds) || settings.cds.length === 0) {
+    settings.cds = [...DEFAULT_CDS]
+    await settings.save()
+  }
+
+  await importSalariesCipFromFile()
 }

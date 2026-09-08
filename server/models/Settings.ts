@@ -7,7 +7,8 @@ const settingsSchema = new Schema({
   motifsSortie: { type: [String], default: [] },
   typesSortiePositive: { type: [String], default: [] },
   motifsReo: { type: [String], default: [] },
-  dispositifs: { type: [String], default: [] }
+  dispositifs: { type: [String], default: [] },
+  cds: { type: [String], default: [] }
 }, { timestamps: true })
 
 export const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema)

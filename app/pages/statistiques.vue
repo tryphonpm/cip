@@ -6,26 +6,6 @@ const clpe = ref(ALL_FILTER)
 const cds = ref(ALL_FILTER)
 const statut = ref(ALL_FILTER)
 
-const log = (hypothesisId: string, message: string, data: Record<string, unknown> = {}) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7533/ingest/71991fc5-0344-424f-94ec-bddb6bd94748', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1a4834' },
-    body: JSON.stringify({
-      sessionId: '1a4834',
-      runId: 'pre-fix',
-      hypothesisId,
-      location: 'pages/statistiques.vue',
-      message,
-      data,
-      timestamp: Date.now()
-    })
-  }).catch(() => {})
-  // #endregion
-}
-
-log('H2', 'statistiques setup start')
-
 const query = computed(() => ({
   cip: toFilterQuery(cip.value),
   clpe: toFilterQuery(clpe.value),
@@ -33,23 +13,9 @@ const query = computed(() => ({
   statut: toFilterQuery(statut.value)
 }))
 
-const { data, refresh, status, error } = useFetch('/api/stats', { query, lazy: true })
-
-log('H2', 'statistiques useFetch resolved', {
-  status: status.value,
-  hasData: Boolean(data.value),
-  hasError: Boolean(error.value)
-})
+const { data, refresh, status } = useFetch('/api/stats', { query, lazy: true })
 
 watch(query, () => refresh())
-
-onMounted(() => {
-  log('H2', 'statistiques mounted', {
-    status: status.value,
-    hasData: Boolean(data.value),
-    titleVisible: Boolean(document.querySelector('h1')?.textContent?.includes('Statistiques'))
-  })
-})
 
 function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
   if (!rows.length) return
