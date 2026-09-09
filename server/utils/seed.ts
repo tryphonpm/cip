@@ -83,4 +83,5 @@ export async function seedApp() {
   }
 
   await importSalariesCipFromFile()
+  await syncSalariesCipKeyImports()
 }

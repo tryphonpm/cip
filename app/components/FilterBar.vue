@@ -1,23 +1,64 @@
 <script setup lang="ts">
+const props = withDefaults(defineProps<{
+  optionsSource?: 'referentiel' | 'beneficiaires'
+}>(), {
+  optionsSource: 'referentiel'
+})
+
 const cip = defineModel<string>('cip', { default: ALL_FILTER })
 const clpe = defineModel<string>('clpe', { default: ALL_FILTER })
 const cds = defineModel<string>('cds', { default: ALL_FILTER })
 const statut = defineModel<string>('statut', { default: ALL_FILTER })
 
-const { data } = useFetch('/api/filters', { lazy: true })
+const { data: filtersData } = useFetch('/api/filters', {
+  lazy: true,
+  immediate: props.optionsSource === 'referentiel'
+})
+const { data: salariesData } = useFetch<{ salaries: SalariesCipOption[] }>('/api/salaries-cip', {
+  lazy: true,
+  immediate: props.optionsSource === 'referentiel'
+})
+const { data: beneficiairesFiltersData } = useFetch<BeneficiairesFilterOptions>('/api/beneficiaires/filters', {
+  lazy: true,
+  immediate: props.optionsSource === 'beneficiaires'
+})
 
-const cipItems = computed(() => [
-  { label: 'Tous les CIP', value: ALL_FILTER },
-  ...(data.value?.cips || []).map((v: string) => ({ label: v, value: v }))
-])
-const clpeItems = computed(() => [
-  { label: 'Tous les CLPE', value: ALL_FILTER },
-  ...(data.value?.clpes || []).map((v: string) => ({ label: v, value: v }))
-])
-const cdsItems = computed(() => [
-  { label: 'Tous les CDS', value: ALL_FILTER },
-  ...(data.value?.cds || []).map((v: string) => ({ label: v, value: v }))
-])
+function toSelectItems(allLabel: string, values: string[]) {
+  return [
+    { label: allLabel, value: ALL_FILTER },
+    ...values.map(value => ({ label: value, value }))
+  ]
+}
+
+const cipItems = computed(() => {
+  if (props.optionsSource === 'beneficiaires') {
+    return toSelectItems('Tous les CIP', beneficiairesFiltersData.value?.cips ?? [])
+  }
+
+  const keys = [...new Set(
+    (salariesData.value?.salaries ?? [])
+      .map(salary => salary.keyImports)
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b, 'fr'))
+
+  return toSelectItems('Tous les CIP', keys)
+})
+
+const clpeItems = computed(() => {
+  if (props.optionsSource === 'beneficiaires') {
+    return toSelectItems('Tous les CLPE', beneficiairesFiltersData.value?.clpes ?? [])
+  }
+
+  return toSelectItems('Tous les CLPE', filtersData.value?.clpes ?? [])
+})
+
+const cdsItems = computed(() => {
+  if (props.optionsSource === 'beneficiaires') {
+    return toSelectItems('Tous les CDS', beneficiairesFiltersData.value?.cds ?? [])
+  }
+
+  return toSelectItems('Tous les CDS', filtersData.value?.cds ?? [])
+})
 const statutItems = [
   { label: 'Tous les statuts', value: ALL_FILTER },
   { label: 'Actifs', value: 'actif' },

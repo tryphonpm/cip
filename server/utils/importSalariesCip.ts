@@ -35,11 +35,38 @@ function toDocument(item: SalariesCipJsonItem) {
     structure: item.structure,
     emploi: item.emploi,
     ldap: item.ldap || { MAIL_PRO: '' },
-    CDS: item.CDS || ''
+    CDS: item.CDS || '',
+    key_imports: buildSalariesCipKeyImports(item.identite)
   }
   const id = toDocumentId(item._id)
   if (id) doc._id = id
   return doc
+}
+
+export async function syncSalariesCipKeyImports() {
+  const docs = await SalariesCip.find().select('identite key_imports').lean()
+  if (!docs.length) return { updated: 0, total: 0 }
+
+  const ops = docs.flatMap((doc) => {
+    const identite = doc.identite as SalariesCip['identite'] | undefined
+    if (!identite) return []
+    const keyImports = buildSalariesCipKeyImports(identite)
+    if (doc.key_imports === keyImports) return []
+    return [{
+      updateOne: {
+        filter: { _id: doc._id },
+        update: { $set: { key_imports: keyImports } }
+      }
+    }]
+  })
+
+  if (!ops.length) return { updated: 0, total: docs.length }
+
+  const result = await SalariesCip.bulkWrite(ops)
+  return {
+    updated: result.modifiedCount,
+    total: docs.length
+  }
 }
 
 export async function importSalariesCipFromFile(options: { force?: boolean } = {}) {

@@ -3,9 +3,7 @@ import type { SalariesCipOption } from '../../shared/types'
 interface SalariesCipSource {
   _id?: { toString(): string } | string
   MATRICULE?: number
-  identite?: {
-    NOM_AFFICHAGE?: string
-  }
+  key_imports?: string
   CDS?: string
 }
 
@@ -14,7 +12,7 @@ export function toSalariesCipOption(doc: SalariesCipSource): SalariesCipOption {
   return {
     id,
     matricule: Number(doc.MATRICULE ?? 0),
-    nomAffichage: String(doc.identite?.NOM_AFFICHAGE ?? ''),
+    keyImports: String(doc.key_imports ?? ''),
     cds: String(doc.CDS ?? '')
   }
 }
@@ -22,6 +20,6 @@ export function toSalariesCipOption(doc: SalariesCipSource): SalariesCipOption {
 export function toSalariesCipOptions(docs: SalariesCipSource[]): SalariesCipOption[] {
   return docs
     .map(toSalariesCipOption)
-    .filter(option => option.nomAffichage)
-    .sort((a, b) => a.nomAffichage.localeCompare(b.nomAffichage, 'fr'))
+    .filter(option => option.keyImports)
+    .sort((a, b) => a.keyImports.localeCompare(b.keyImports, 'fr'))
 }

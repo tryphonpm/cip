@@ -21,6 +21,18 @@
     @apply mt-1 text-muted;
   }
 
+  .kpi-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .periode-filter {
+    @apply max-w-xl min-w-72;
+  }
+
+  .bilan-toolbar {
+    @apply flex flex-wrap items-end justify-between gap-3;
+  }
+
   .nav-separator {
     @apply my-2 border-t border-slate-200 dark:border-slate-800;
   }
@@ -127,5 +139,65 @@
 
   .attribution-filter-bar {
     @apply flex flex-wrap items-center gap-2;
+  }
+
+  .settings-tabs {
+    @apply w-full;
+  }
+
+  .settings-tab-panel {
+    @apply space-y-4 pt-4;
+  }
+
+  .settings-list {
+    @apply flex flex-col gap-2;
+  }
+
+  .settings-list-row {
+    @apply flex items-center gap-2;
+  }
+
+  .settings-list-input {
+    @apply min-w-0 flex-1;
+  }
+
+  .settings-save-bar {
+    @apply flex flex-wrap items-center gap-3 border-t border-default pt-6 mt-6;
+  }
+
+  .settings-mapping {
+    @apply flex flex-col gap-4;
+  }
+
+  .settings-mapping-table {
+    @apply w-full border-separate border-spacing-y-2;
+  }
+
+  .settings-number-input {
+    @apply max-w-32;
+  }
+
+  .settings-mapping-head {
+    @apply px-1 pb-2 text-left text-xs font-medium text-muted;
+  }
+
+  .settings-mapping-cell {
+    @apply px-1 align-top;
+  }
+
+  .settings-mapping-actions {
+    @apply w-12;
+  }
+
+  .settings-mapping-key {
+    @apply min-w-40;
+  }
+
+  .settings-mapping-format {
+    @apply min-w-52;
+  }
+
+  .settings-mapping-desc {
+    @apply min-w-72;
   }
 }

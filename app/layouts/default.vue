@@ -27,14 +27,23 @@ const links: NavItem[] = [
       { label: 'Attribution CDS', to: '/orientations/attribution_cds' }
     ]
   },
-  { label: 'Imports', to: '/imports', icon: 'i-lucide-file-up' },
+  { label: '(TMP / Imports)', to: '/imports', icon: 'i-lucide-file-up' },
   { type: 'separator' },
   { label: 'Bénéficiaires', to: '/beneficiaires', icon: 'i-lucide-users' },
   { label: 'Alertes', to: '/alertes', icon: 'i-lucide-triangle-alert' },
   { type: 'separator' },
   { label: 'Statistiques', to: '/statistiques', icon: 'i-lucide-chart-column' },
+  { label: 'Bilans', to: '/bilans', icon: 'i-lucide-file-text' },
   { type: 'separator' },
-  { label: 'Paramètres', to: '/parametres', icon: 'i-lucide-settings' }
+  {
+    label: 'Paramètres',
+    to: '/settings',
+    icon: 'i-lucide-settings',
+    children: [
+      { label: 'Référentiels', to: '/settings' },
+      { label: 'Comptes', to: '/parametres' }
+    ]
+  }
 ]
 
 function isNavLink(item: NavItem): item is NavLink {

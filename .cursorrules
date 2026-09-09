@@ -175,6 +175,7 @@ Avant d’ajouter un paquet, vous lisez ce catalogue : s’il existe déjà un o
 | `@iconify-json/lucide` | Jeu d’icônes Lucide pour Nuxt UI | `UIcon` + préfixe `i-lucide-`. Pas d’autre pack (`heroicons`, `mdi`, …) sans inscription ici. |
 | `mongoose` | ODM MongoDB | Tous les modèles et requêtes métier. Pas de driver `mongodb` brut, sauf exception justifiée dans un utilitaire bas niveau. |
 | `exceljs` | Lecture / écriture `.xlsx` | **Seul** parseur des fichiers reporting CIP. Interdit d’ajouter `xlsx`, `sheetjs`, `excel4node`, etc. |
+| `jszip` | Archives ZIP (OOXML) | Remplissage des modèles Word `.docx` par remplacement de tags. Interdit comme parseur Excel (exceljs) ou pour générer un `.xlsx`. |
 | `bcryptjs` | Hash des mots de passe | Auth uniquement. Pas d’autre lib de hash (`bcrypt` natif, `argon2`, …) sans inscription ici. |
 | `mongodb-memory-server` | Mongo en mémoire | Dev / tests / repli local **uniquement**. Jamais en production. |
 | `pinia` | Gestion d’état client | **Obligatoire** dès qu’un déclencheur §3.1 est atteint. Stores dans `app/stores/`. Interdit : composable global, `provide`/`inject` ou autre store (Redux, Vuex) pour couvrir le même besoin. |

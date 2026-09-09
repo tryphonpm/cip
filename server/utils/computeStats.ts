@@ -1,10 +1,26 @@
+import {
+  CIP_LOT_PERIMETRES,
+  CIP_LOTS,
+  lotLabel,
+  normalizeLotNumber,
+  type BilanLotRow,
+  type BilanSemestriel,
+  type BilanTotaux,
+  type CipLot
+} from '../../shared/types'
+import { normalizeName } from './normalize'
+
 interface BeneficiaireLike {
   cipNom?: string
   clpe?: string
   territoire?: string
   cds?: string
+  lot?: string
+  nomNormalise?: string
+  prenomNormalise?: string
   statut?: string
   dateOrientation?: Date | null
+  dateSortie?: Date | null
   ceSigne6?: Date | null
   ceSigne12?: Date | null
   pmsmp?: boolean
@@ -16,9 +32,10 @@ interface BeneficiaireLike {
   motifSortie?: string
   motifReo?: string
   typeSortie?: string
+  commentaires?: string
   dispositifs?: { nom: string, valeur: string }[]
   absences?: { avantCe1?: number, avantCe2?: number, mois?: number[] }
-  suspensions?: { demande?: boolean }
+  suspensions?: { demande?: boolean, dateDemande?: Date | string | null }
 }
 
 function hasCe(b: BeneficiaireLike) {
@@ -153,4 +170,139 @@ export function applyFilters<T extends BeneficiaireLike>(
     if (query.statut && b.statut !== query.statut) return false
     return true
   })
+}
+
+function toUtcDay(value: Date | string | null | undefined): Date | null {
+  if (value == null || value === '') return null
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+}
+
+function isOnOrBefore(date: Date, end: Date) {
+  return date.getTime() <= end.getTime()
+}
+
+function isInRange(date: Date | null, start: Date, end: Date) {
+  if (!date) return false
+  return date.getTime() >= start.getTime() && date.getTime() <= end.getTime()
+}
+
+function personKeyOf(row: BeneficiaireLike) {
+  const nom = row.nomNormalise || normalizeName(row.nom)
+  const prenom = row.prenomNormalise || normalizeName(row.prenom)
+  return `${nom}|${prenom}`
+}
+
+function lotKeyOf(row: BeneficiaireLike) {
+  return normalizeLotNumber(row.lot)
+}
+
+export function isDemandeCli(row: BeneficiaireLike) {
+  if (row.suspensions?.demande) return true
+  return /\bCLI\b/i.test(row.commentaires || '')
+}
+
+function emptyLotRow(lot: string): BilanLotRow {
+  const known = CIP_LOTS.includes(lot as CipLot)
+  return {
+    lot,
+    lotLabel: lotLabel(lot),
+    perimetre: known ? CIP_LOT_PERIMETRES[lot as CipLot] : '',
+    orientations: 0,
+    doublons: 0,
+    fileActive: 0,
+    sorties: 0,
+    demandesCli: 0
+  }
+}
+
+export function computeBilanSemestriel(
+  rows: BeneficiaireLike[],
+  start: Date,
+  end: Date
+): Pick<BilanSemestriel, 'totaux' | 'parLot' | 'sortiesParMotif'> {
+  const withDates = rows.map(row => ({
+    row,
+    lot: lotKeyOf(row),
+    key: personKeyOf(row),
+    dateOrientation: toUtcDay(row.dateOrientation),
+    dateSortie: toUtcDay(row.dateSortie),
+    dateDemandeCli: toUtcDay(row.suspensions?.dateDemande)
+  }))
+
+  const orientations = withDates.filter(item => isInRange(item.dateOrientation, start, end))
+  const orientationKeys = orientations.reduce((map, item) => {
+    map.set(item.key, (map.get(item.key) || 0) + 1)
+    return map
+  }, new Map<string, number>())
+
+  const sorties = withDates.filter(item => isInRange(item.dateSortie, start, end))
+
+  const fileActive = withDates.filter((item) => {
+    if (!item.dateOrientation || !isOnOrBefore(item.dateOrientation, end)) return false
+    if (item.dateSortie && isOnOrBefore(item.dateSortie, end)) return false
+    if (!item.dateSortie && item.row.statut === 'sortie') return false
+    return true
+  })
+
+  const presentDuringPeriod = withDates.filter((item) => {
+    if (!item.dateOrientation || item.dateOrientation.getTime() > end.getTime()) return false
+    if (item.dateSortie && item.dateSortie.getTime() < start.getTime()) return false
+    return true
+  })
+
+  const demandesCli = presentDuringPeriod.filter((item) => {
+    if (!isDemandeCli(item.row)) return false
+    if (item.dateDemandeCli) return isInRange(item.dateDemandeCli, start, end)
+    return true
+  })
+
+  const lots = new Map<string, BilanLotRow>()
+  for (const lot of CIP_LOTS) lots.set(lot, emptyLotRow(lot))
+
+  function ensureLot(lot: string) {
+    const key = lot || '__none__'
+    const existing = lots.get(key)
+    if (existing) return existing
+    const created = emptyLotRow(lot)
+    lots.set(key, created)
+    return created
+  }
+
+  for (const item of orientations) {
+    ensureLot(item.lot).orientations += 1
+  }
+  for (const item of orientations) {
+    if ((orientationKeys.get(item.key) || 0) > 1) ensureLot(item.lot).doublons += 1
+  }
+  for (const item of fileActive) {
+    ensureLot(item.lot).fileActive += 1
+  }
+  for (const item of sorties) {
+    ensureLot(item.lot).sorties += 1
+  }
+  for (const item of demandesCli) {
+    ensureLot(item.lot).demandesCli += 1
+  }
+
+  const parLot = [...lots.values()].sort((a, b) => {
+    if (!a.lot) return 1
+    if (!b.lot) return -1
+    return a.lot.localeCompare(b.lot, 'fr', { numeric: true })
+  })
+
+  const totaux: BilanTotaux = {
+    orientations: orientations.length,
+    doublons: Math.max(0, orientations.length - orientationKeys.size),
+    fileActive: fileActive.length,
+    sorties: sorties.length,
+    demandesCli: demandesCli.length
+  }
+
+  return {
+    totaux,
+    parLot,
+    sortiesParMotif: groupCount(sorties.map(item => item.row), b => b.motifSortie || 'Non renseigné')
+  }
 }

@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
       row[cipKey] = ''
     }
     else if (!cdsLabelsMatch(previousCds, cds)) {
-      const salary = await SalariesCip.findOne({ 'identite.NOM_AFFICHAGE': currentCip }).lean()
+      const salary = await SalariesCip.findOne({ key_imports: currentCip }).lean()
       if (!salary || !cdsLabelsMatch(String(salary.CDS ?? ''), cds)) {
         row[cipKey] = ''
       }

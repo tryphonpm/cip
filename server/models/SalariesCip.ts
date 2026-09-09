@@ -36,11 +36,19 @@ const salariesCipSchema = new Schema({
   structure: { type: structureSchema, required: true },
   emploi: { type: emploiSchema, required: true },
   ldap: { type: ldapSchema, default: () => ({}) },
-  CDS: { type: String, default: '' }
+  CDS: { type: String, default: '' },
+  key_imports: { type: String, default: '' }
 }, { timestamps: true })
+
+salariesCipSchema.pre('save', function () {
+  if (this.identite) {
+    this.key_imports = buildSalariesCipKeyImports(this.identite)
+  }
+})
 
 salariesCipSchema.index({ 'identite.NOM_AFFICHAGE': 1 })
 salariesCipSchema.index({ CDS: 1 })
+salariesCipSchema.index({ key_imports: 1 })
 
 export const SalariesCip = mongoose.models.SalariesCip
   || mongoose.model('SalariesCip', salariesCipSchema, 'salaries_cip')

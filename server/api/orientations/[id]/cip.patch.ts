@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const salary = await SalariesCip.findOne({ 'identite.NOM_AFFICHAGE': cip }).lean()
+    const salary = await SalariesCip.findOne({ key_imports: cip }).lean()
     if (!salary) {
       throw createError({ statusCode: 422, message: 'Le CIP sélectionné est introuvable.' })
     }

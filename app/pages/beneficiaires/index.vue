@@ -33,7 +33,13 @@ const rows = computed(() => (data.value?.beneficiaires || []).map(b => ({
       <p class="text-slate-500">{{ data?.total ?? 0 }} fiche(s).</p>
     </div>
     <UInput v-model="q" icon="i-lucide-search" placeholder="Nom, prénom ou code FSE" class="max-w-md" />
-    <FilterBar v-model:cip="cip" v-model:clpe="clpe" v-model:cds="cds" v-model:statut="statut" />
+    <FilterBar
+      v-model:cip="cip"
+      v-model:clpe="clpe"
+      v-model:cds="cds"
+      v-model:statut="statut"
+      options-source="beneficiaires"
+    />
     <UCard>
       <UTable
         :data="rows"

@@ -137,6 +137,152 @@ export function mappingImportBeneficiaireItems(raw: unknown): MappingImportBenef
   })
 }
 
+export const APP_SETTINGS_KEY = 'app'
+
+export const APP_SETTINGS_STRING_LIST_KEYS = [
+  'projetsProfessionnels',
+  'motifsSortie',
+  'typesSortiePositive',
+  'motifsReo',
+  'dispositifs',
+  'cds'
+] as const
+
+export type AppSettingsStringListKey = typeof APP_SETTINGS_STRING_LIST_KEYS[number]
+
+export interface AppSettings {
+  delaiPremierRdvJours: number
+  projetsProfessionnels: string[]
+  motifsSortie: string[]
+  typesSortiePositive: string[]
+  motifsReo: string[]
+  dispositifs: string[]
+  cds: string[]
+  mapping_import_beneficiaire: MappingImportBeneficiaire
+}
+
+export type AppSettingsPatch = Partial<AppSettings>
+
+export interface SettingsApiResponse {
+  settings: AppSettings
+}
+
+export function emptyAppSettings(): AppSettings {
+  return {
+    delaiPremierRdvJours: 15,
+    projetsProfessionnels: [],
+    motifsSortie: [],
+    typesSortiePositive: [],
+    motifsReo: [],
+    dispositifs: [],
+    cds: [],
+    mapping_import_beneficiaire: { mapping: [] }
+  }
+}
+
+function emptyToNull(value: string | null | undefined): string | null {
+  if (value == null) return null
+  const text = String(value).trim()
+  return text || null
+}
+
+export function sanitizeStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const item of value) {
+    const text = String(item ?? '').trim()
+    if (!text || seen.has(text)) continue
+    seen.add(text)
+    result.push(text)
+  }
+  return result
+}
+
+export function sanitizeMappingImportBeneficiaire(raw: unknown): MappingImportBeneficiaire {
+  if (!raw || typeof raw !== 'object') return { mapping: [] }
+  const record = raw as { meta?: unknown }
+  const mapping = mappingImportBeneficiaireItems(raw).map(item => ({
+    cleBeneficiaire: emptyToNull(item.cleBeneficiaire),
+    cleOrientation: emptyToNull(item.cleOrientation),
+    formatBeneficiaire: emptyToNull(item.formatBeneficiaire),
+    formatOrientation: emptyToNull(item.formatOrientation),
+    ...(typeof item.Descriptif === 'string' && item.Descriptif.trim()
+      ? { Descriptif: item.Descriptif.trim() }
+      : {})
+  }))
+  const result: MappingImportBeneficiaire = { mapping }
+  if (record.meta && typeof record.meta === 'object') {
+    result.meta = record.meta as Record<string, unknown>
+  }
+  return result
+}
+
+export function clampDelaiPremierRdvJours(value: unknown): number | undefined {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return undefined
+  return Math.max(1, Math.min(180, Math.round(parsed)))
+}
+
+export function toAppSettings(raw: unknown): AppSettings {
+  const doc = raw && typeof raw === 'object' ? raw as Record<string, unknown> : {}
+  const source = doc.data && typeof doc.data === 'object'
+    ? doc.data as Record<string, unknown>
+    : doc
+  const delai = clampDelaiPremierRdvJours(source.delaiPremierRdvJours)
+  return {
+    delaiPremierRdvJours: delai ?? 15,
+    projetsProfessionnels: sanitizeStringList(source.projetsProfessionnels),
+    motifsSortie: sanitizeStringList(source.motifsSortie),
+    typesSortiePositive: sanitizeStringList(source.typesSortiePositive),
+    motifsReo: sanitizeStringList(source.motifsReo),
+    dispositifs: sanitizeStringList(source.dispositifs),
+    cds: sanitizeStringList(source.cds),
+    mapping_import_beneficiaire: sanitizeMappingImportBeneficiaire(source.mapping_import_beneficiaire)
+  }
+}
+
+export function cloneAppSettings(source: AppSettings): AppSettings {
+  return {
+    delaiPremierRdvJours: source.delaiPremierRdvJours,
+    projetsProfessionnels: [...source.projetsProfessionnels],
+    motifsSortie: [...source.motifsSortie],
+    typesSortiePositive: [...source.typesSortiePositive],
+    motifsReo: [...source.motifsReo],
+    dispositifs: [...source.dispositifs],
+    cds: [...source.cds],
+    mapping_import_beneficiaire: {
+      ...(source.mapping_import_beneficiaire.meta
+        ? { meta: { ...source.mapping_import_beneficiaire.meta } }
+        : {}),
+      mapping: source.mapping_import_beneficiaire.mapping.map(item => ({ ...item }))
+    }
+  }
+}
+
+export function pickAppSettingsPatch(body: unknown): AppSettingsPatch {
+  if (!body || typeof body !== 'object') return {}
+  const record = body as Record<string, unknown>
+  const patch: AppSettingsPatch = {}
+  if ('delaiPremierRdvJours' in record) {
+    const delai = clampDelaiPremierRdvJours(record.delaiPremierRdvJours)
+    if (delai !== undefined) patch.delaiPremierRdvJours = delai
+  }
+  for (const key of APP_SETTINGS_STRING_LIST_KEYS) {
+    if (key in record) patch[key] = sanitizeStringList(record[key])
+  }
+  if ('mapping_import_beneficiaire' in record) {
+    patch.mapping_import_beneficiaire = sanitizeMappingImportBeneficiaire(record.mapping_import_beneficiaire)
+  }
+  return patch
+}
+
+export function mappingImportMetaText(meta: Record<string, unknown> | undefined, field: string): string {
+  if (!meta) return ''
+  const value = meta[field]
+  return typeof value === 'string' ? value : ''
+}
+
 export function withOrientationRowStatut(rows: OrientationRow[]): OrientationRow[] {
   return rows.map(row => ({
     ...row,
@@ -275,19 +421,19 @@ export function buildCipSelectItems(
   const filtered = salaries.filter(salary =>
     cds && cdsLabelsMatch(salary.cds, cds)
   )
-  if (currentCip && !filtered.some(salary => salary.nomAffichage === currentCip)) {
+  if (currentCip && !filtered.some(salary => salary.keyImports === currentCip)) {
     filtered.unshift({
       id: '',
       matricule: 0,
-      nomAffichage: currentCip,
+      keyImports: currentCip,
       cds
     })
   }
   return [
     { label: 'À attribuer', value: CIP_UNASSIGNED },
     ...filtered.map(salary => ({
-      label: salary.nomAffichage,
-      value: salary.nomAffichage
+      label: salary.keyImports,
+      value: salary.keyImports
     }))
   ]
 }
@@ -338,7 +484,7 @@ export function orientationFieldRaw(row: OrientationRow, header: string): Orient
   return null
 }
 
-function formatIsoDateUtc(date: Date): string {
+export function formatIsoDateUtc(date: Date): string {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
 }
 
@@ -383,10 +529,16 @@ export function toAttributionCdsRows(rows: OrientationRow[], cdsOptions: string[
   }))
 }
 
+export interface BeneficiairesFilterOptions {
+  cips: string[]
+  clpes: string[]
+  cds: string[]
+}
+
 export interface SalariesCipOption {
   id: string
   matricule: number
-  nomAffichage: string
+  keyImports: string
   cds: string
 }
 
@@ -394,6 +546,14 @@ export interface SalariesCipIdentite {
   SA_NOM: string
   SA_PRENOM: string
   NOM_AFFICHAGE: string
+}
+
+export function buildSalariesCipKeyImports(
+  identite: Pick<SalariesCipIdentite, 'SA_PRENOM' | 'SA_NOM'>
+): string {
+  const prenom = String(identite.SA_PRENOM ?? '').trim().toUpperCase()
+  const nom = String(identite.SA_NOM ?? '').trim()
+  return `${prenom} ${nom}`.trim()
 }
 
 export interface SalariesCipManager {
@@ -428,4 +588,146 @@ export interface SalariesCip {
   emploi: SalariesCipEmploi
   ldap: SalariesCipLdap
   CDS: string
+  key_imports: string
+}
+
+export const ALL_SEMESTRES = '__all_semestres__'
+
+export const CIP_LOTS = ['1', '2', '3', '4'] as const
+
+export type CipLot = typeof CIP_LOTS[number]
+
+export const CIP_LOT_PERIMETRES: Record<CipLot, string> = {
+  '1': 'Périmètre d’intervention de Grand Bourg Agglomération, de la communauté de communes de Bresse et Saône, de la communauté de communes de La Veyle ainsi que le territoire de la commune de Saint-Laurent-sur-Saône',
+  '2': 'Périmètre d’intervention de Haut Bugey Agglomération, de Pays de Gex Agglo ainsi que de Terre Valserhône l’Interco',
+  '3': 'Périmètre d’intervention de la communauté de communes de Plaine de l’Ain, de la communauté de communes de Rives de l’Ain Pays du Cerdon, de la communauté de communes de Bugey Sud ainsi que le périmètre des communes de Seyssel, Corbonod et Anglefort',
+  '4': 'Périmètre d’intervention de la communauté de communes de la Côtière, de la communauté de communes de Miribel et du Plateau, de la communauté de communes de la Dombes, ainsi que de la communauté de communes de Dombes Saône Vallée'
+}
+
+export interface SemestreOption {
+  id: string
+  label: string
+  start: string
+  end: string
+}
+
+export interface BilanCountByKey {
+  key: string
+  count: number
+}
+
+export interface BilanLotRow {
+  lot: string
+  lotLabel: string
+  perimetre: string
+  orientations: number
+  doublons: number
+  fileActive: number
+  sorties: number
+  demandesCli: number
+}
+
+export interface BilanTotaux {
+  orientations: number
+  doublons: number
+  fileActive: number
+  sorties: number
+  demandesCli: number
+}
+
+export interface BilanSemestriel {
+  semestre: SemestreOption
+  semestres: SemestreOption[]
+  totaux: BilanTotaux
+  parLot: BilanLotRow[]
+  sortiesParMotif: BilanCountByKey[]
+}
+
+export function lotLabel(lot: string): string {
+  const n = normalizeLotNumber(lot)
+  return n ? `Lot ${n}` : 'Lot non renseigné'
+}
+
+export function normalizeLotNumber(lot: string | null | undefined): string {
+  const match = String(lot || '').match(/(\d+)/)
+  return match?.[1] || ''
+}
+
+export function semestreIdFromDate(date: Date): string {
+  const year = date.getUTCFullYear()
+  const half = date.getUTCMonth() < 6 ? 1 : 2
+  return `${year}-S${half}`
+}
+
+function semestreParts(id: string): { year: number, half: 1 | 2 } | null {
+  const match = /^(\d{4})-S([12])$/.exec(id)
+  if (!match) return null
+  return { year: Number(match[1]), half: Number(match[2]) as 1 | 2 }
+}
+
+export function parseSemestreId(id: string): { year: number, half: 1 | 2 } | null {
+  return semestreParts(id)
+}
+
+export function semestreBounds(id: string): { start: Date, end: Date } | null {
+  const parsed = semestreParts(id)
+  if (!parsed) return null
+  if (parsed.half === 1) {
+    return {
+      start: new Date(Date.UTC(parsed.year, 0, 1)),
+      end: new Date(Date.UTC(parsed.year, 5, 30))
+    }
+  }
+  return {
+    start: new Date(Date.UTC(parsed.year, 6, 1)),
+    end: new Date(Date.UTC(parsed.year, 11, 31))
+  }
+}
+
+export function semestreLabel(id: string): string {
+  const parsed = semestreParts(id)
+  if (!parsed) return id
+  if (parsed.half === 1) {
+    return `1er semestre ${parsed.year} (1er janvier – 30 juin ${parsed.year})`
+  }
+  return `2e semestre ${parsed.year} (1er juillet – 31 décembre ${parsed.year})`
+}
+
+export function buildSemestreOptions(from: Date, to: Date): SemestreOption[] {
+  const startYear = from.getUTCFullYear()
+  const startHalf: 1 | 2 = from.getUTCMonth() < 6 ? 1 : 2
+  const endYear = to.getUTCFullYear()
+  const endHalf: 1 | 2 = to.getUTCMonth() < 6 ? 1 : 2
+  if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) return []
+
+  const options: SemestreOption[] = []
+  let year = startYear
+  let half: 1 | 2 = startHalf
+  while (year < endYear || (year === endYear && half <= endHalf)) {
+    const start = half === 1
+      ? new Date(Date.UTC(year, 0, 1))
+      : new Date(Date.UTC(year, 6, 1))
+    const end = half === 1
+      ? new Date(Date.UTC(year, 5, 30))
+      : new Date(Date.UTC(year, 11, 31))
+    const id = `${year}-S${half}`
+    const label = half === 1
+      ? `1er semestre ${year} (1er janvier – 30 juin ${year})`
+      : `2e semestre ${year} (1er juillet – 31 décembre ${year})`
+    options.push({
+      id,
+      label,
+      start: `${start.getUTCFullYear()}-${String(start.getUTCMonth() + 1).padStart(2, '0')}-${String(start.getUTCDate()).padStart(2, '0')}`,
+      end: `${end.getUTCFullYear()}-${String(end.getUTCMonth() + 1).padStart(2, '0')}-${String(end.getUTCDate()).padStart(2, '0')}`
+    })
+    if (half === 1) {
+      half = 2
+    }
+    else {
+      half = 1
+      year += 1
+    }
+    if (options.length > 40) break
+  }
+  return options.reverse()
 }

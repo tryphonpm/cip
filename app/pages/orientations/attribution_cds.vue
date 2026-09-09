@@ -87,7 +87,7 @@ function patchRow(index: number, patch: Partial<AttributionCdsRow>) {
         next.cip = ''
       }
       else if (next.cip) {
-        const salary = salaries.value.find(item => item.nomAffichage === next.cip)
+        const salary = salaries.value.find(item => item.keyImports === next.cip)
         if (!salary || !cdsLabelsMatch(salary.cds, next.cds)) {
           next.cip = ''
         }

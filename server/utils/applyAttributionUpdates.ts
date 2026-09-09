@@ -29,10 +29,10 @@ export async function applyAttributionUpdates(
 ): Promise<OrientationRow[]> {
   const nextRows = rows.map(row => ({ ...row }))
   const salaries = await SalariesCip.find()
-    .select('identite.NOM_AFFICHAGE CDS')
+    .select('key_imports CDS')
     .lean()
-  const salaryCdsByName = new Map(
-    salaries.map(salary => [String(salary.identite?.NOM_AFFICHAGE ?? ''), String(salary.CDS ?? '')])
+  const salaryCdsByKeyImports = new Map(
+    salaries.map(salary => [String(salary.key_imports ?? ''), String(salary.CDS ?? '')])
   )
 
   for (const update of updates) {
@@ -62,7 +62,7 @@ export async function applyAttributionUpdates(
           message: 'Veuillez d\'abord attribuer un CDS avant de sélectionner un CIP.'
         })
       }
-      const salaryCds = salaryCdsByName.get(cip)
+      const salaryCds = salaryCdsByKeyImports.get(cip)
       if (!salaryCds) {
         throw createError({ statusCode: 422, message: 'Le CIP sélectionné est introuvable.' })
       }
